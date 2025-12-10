@@ -1,4 +1,4 @@
-import { runMigrations } from '../src/lib/db/migrations'
+import { runMigrations } from '../src/lib/db/migrations.js'
 
 runMigrations()
   .then(() => {
