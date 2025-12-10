@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Shree Durga Adishakti Temple & Prajna International School
+
+A premium, modern Next.js website for Shree Durga Adishakti Temple and Prajna International School.
+
+## Features
+
+- **Temple Section**: About, Deities, Rituals & Services, Events & Festivals, Gallery
+- **School Section**: About, Academics, Admissions, Facilities, Student Life
+- **Donations**: Online donation system with multiple categories
+- **Leadership**: Profiles of key personnel
+- **Contact**: Contact forms and visit information
+
+## Tech Stack
+
+- Next.js 14+ (App Router)
+- TypeScript
+- Tailwind CSS
+- React Hook Form + Zod
+- Lucide React (icons)
 
 ## Getting Started
 
-First, run the development server:
-
+1. Install dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Run the development server:
+```bash
+npm run dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
+```
+src/
+├── app/              # Next.js App Router pages
+├── components/       # Reusable UI components
+├── lib/              # Utilities and helpers
+└── types/            # TypeScript type definitions
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Payment Integration
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The donation system is structured to integrate with payment gateways like Razorpay, PayU, or Stripe. Configure your payment gateway credentials in environment variables.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Environment Variables
 
-## Deploy on Vercel
+Create a `.env.local` file:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+# Add payment gateway keys when integrating
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
