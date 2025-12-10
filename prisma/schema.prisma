@@ -1,0 +1,123 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  passwordHash String @map("password_hash")
+  name      String
+  role      String   @default("admin")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  title       String
+  description String?  @db.Text
+  eventDate   DateTime @map("event_date") @db.Date
+  eventTime   String?  @map("event_time") @db.Time
+  eventType   String   @map("event_type") // 'festival', 'satsang', 'special-pooja', 'other'
+  bannerUrl   String?  @map("banner_url")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([eventDate])
+  @@index([eventType])
+  @@map("events")
+}
+
+model GalleryImage {
+  id        String   @id @default(uuid())
+  fileUrl   String   @map("file_url")
+  fileName  String   @map("file_name")
+  category  String   // 'temple', 'festivals', 'devotees', 'school'
+  altText   String?  @map("alt_text")
+  uploadedBy String? @map("uploaded_by")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([category])
+  @@map("gallery_images")
+}
+
+model Donation {
+  id            String   @id @default(uuid())
+  donorName     String   @map("donor_name")
+  donorEmail    String   @map("donor_email")
+  donorPhone    String?  @map("donor_phone")
+  donorAddress  String?  @map("donor_address") @db.Text
+  amount        Decimal  @db.Decimal(10, 2)
+  purpose       String
+  frequency     String   @default("one-time") // 'one-time', 'monthly'
+  paymentStatus String   @default("pending") @map("payment_status") // 'pending', 'completed', 'failed'
+  paymentId     String?  @map("payment_id")
+  transactionId String?  @map("transaction_id")
+  receiptUrl    String?  @map("receipt_url")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([paymentStatus])
+  @@index([createdAt])
+  @@map("donations")
+}
+
+model ContactEnquiry {
+  id          String   @id @default(uuid())
+  name        String
+  email       String
+  phone       String?
+  subject     String
+  message     String   @db.Text
+  enquiryType String   @map("enquiry_type") // 'temple', 'donation', 'school-admissions', 'ritual-booking', 'other'
+  status      String   @default("new") // 'new', 'read', 'replied', 'resolved'
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@index([enquiryType])
+  @@map("contact_enquiries")
+}
+
+model AdmissionEnquiry {
+  id              String   @id @default(uuid())
+  studentName     String   @map("student_name")
+  parentName      String   @map("parent_name")
+  email           String
+  phone           String
+  classInterested String   @map("class_interested")
+  message         String?  @db.Text
+  status          String   @default("new") // 'new', 'contacted', 'admitted', 'rejected'
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@map("admission_enquiries")
+}
+
+model RitualBooking {
+  id             String   @id @default(uuid())
+  name           String
+  email          String
+  phone          String
+  ritualId       String   @map("ritual_id")
+  preferredDate  DateTime? @map("preferred_date") @db.Date
+  preferredTime  String?  @map("preferred_time") @db.Time
+  specialRequests String? @map("special_requests") @db.Text
+  status         String   @default("pending") // 'pending', 'confirmed', 'completed', 'cancelled'
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("ritual_bookings")
+}
+
