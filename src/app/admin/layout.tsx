@@ -1,0 +1,28 @@
+import { getServerSession } from 'next-auth'
+import { redirect } from 'next/navigation'
+import { authOptions } from '../api/auth/[...nextauth]/route'
+import AdminSidebar from '@/components/admin/AdminSidebar'
+
+export default async function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const session = await getServerSession(authOptions)
+
+  if (!session || session.user.role !== 'admin') {
+    redirect('/admin/login')
+  }
+
+  return (
+    <div className="min-h-screen bg-temple-off-white">
+      <div className="flex">
+        <AdminSidebar />
+        <main className="flex-1 p-6 lg:p-8">
+          {children}
+        </main>
+      </div>
+    </div>
+  )
+}
+
