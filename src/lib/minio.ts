@@ -73,6 +73,20 @@ export async function uploadFile(
   }
 }
 
+// Alias for uploadFile (for consistency)
+export async function uploadToMinIO(
+  objectName: string,
+  buffer: Buffer,
+  contentType: string
+): Promise<string> {
+  await ensureBucketExists()
+  const metaData = {
+    'Content-Type': contentType,
+  }
+  await minioClient.putObject(BUCKET_NAME, objectName, buffer, buffer.length, metaData)
+  return getFileUrl(objectName)
+}
+
 // Get file URL
 export async function getFileUrl(objectName: string, expiry: number = 7 * 24 * 60 * 60): Promise<string> {
   try {
