@@ -11,9 +11,9 @@ export default async function AdminAdmissionsPage() {
 
   const stats = {
     total: admissions.length,
-    new: admissions.filter((a) => a.status === 'new').length,
-    contacted: admissions.filter((a) => a.status === 'contacted').length,
-    admitted: admissions.filter((a) => a.status === 'admitted').length,
+    new: admissions.filter((a: AdmissionEnquiry) => a.status === 'new').length,
+    contacted: admissions.filter((a: AdmissionEnquiry) => a.status === 'contacted').length,
+    admitted: admissions.filter((a: AdmissionEnquiry) => a.status === 'admitted').length,
   }
 
   return (

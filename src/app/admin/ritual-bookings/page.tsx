@@ -11,9 +11,9 @@ export default async function AdminRitualBookingsPage() {
 
   const stats = {
     total: bookings.length,
-    pending: bookings.filter((b) => b.status === 'pending').length,
-    confirmed: bookings.filter((b) => b.status === 'confirmed').length,
-    completed: bookings.filter((b) => b.status === 'completed').length,
+    pending: bookings.filter((b: RitualBooking) => b.status === 'pending').length,
+    confirmed: bookings.filter((b: RitualBooking) => b.status === 'confirmed').length,
+    completed: bookings.filter((b: RitualBooking) => b.status === 'completed').length,
   }
 
   return (

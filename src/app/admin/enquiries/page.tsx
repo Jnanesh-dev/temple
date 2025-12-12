@@ -11,8 +11,8 @@ export default async function AdminEnquiriesPage() {
 
   const stats = {
     total: enquiries.length,
-    new: enquiries.filter((e) => e.status === 'new').length,
-    replied: enquiries.filter((e) => e.status === 'replied').length,
+    new: enquiries.filter((e: ContactEnquiry) => e.status === 'new').length,
+    replied: enquiries.filter((e: ContactEnquiry) => e.status === 'replied').length,
   }
 
   return (
