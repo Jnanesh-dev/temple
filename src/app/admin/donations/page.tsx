@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import DonationsTable from '@/components/admin/DonationsTable'
 
+type Donation = Awaited<ReturnType<typeof prisma.donation.findMany>>[0]
+
 export default async function AdminDonationsPage() {
   const donations = await prisma.donation.findMany({
     orderBy: { createdAt: 'desc' },
@@ -9,11 +11,11 @@ export default async function AdminDonationsPage() {
 
   const stats = {
     total: donations.length,
-    completed: donations.filter((d) => d.paymentStatus === 'completed').length,
-    pending: donations.filter((d) => d.paymentStatus === 'pending').length,
+    completed: donations.filter((d: Donation) => d.paymentStatus === 'completed').length,
+    pending: donations.filter((d: Donation) => d.paymentStatus === 'pending').length,
     totalAmount: donations
-      .filter((d) => d.paymentStatus === 'completed')
-      .reduce((sum, d) => sum + Number(d.amount), 0),
+      .filter((d: Donation) => d.paymentStatus === 'completed')
+      .reduce((sum: number, d: Donation) => sum + Number(d.amount), 0),
   }
 
   return (

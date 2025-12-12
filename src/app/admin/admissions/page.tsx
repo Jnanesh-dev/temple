@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import AdmissionsTable from '@/components/admin/AdmissionsTable'
 
+type AdmissionEnquiry = Awaited<ReturnType<typeof prisma.admissionEnquiry.findMany>>[0]
+
 export default async function AdminAdmissionsPage() {
   const admissions = await prisma.admissionEnquiry.findMany({
     orderBy: { createdAt: 'desc' },
@@ -9,9 +11,9 @@ export default async function AdminAdmissionsPage() {
 
   const stats = {
     total: admissions.length,
-    new: admissions.filter((a) => a.status === 'new').length,
-    contacted: admissions.filter((a) => a.status === 'contacted').length,
-    admitted: admissions.filter((a) => a.status === 'admitted').length,
+    new: admissions.filter((a: AdmissionEnquiry) => a.status === 'new').length,
+    contacted: admissions.filter((a: AdmissionEnquiry) => a.status === 'contacted').length,
+    admitted: admissions.filter((a: AdmissionEnquiry) => a.status === 'admitted').length,
   }
 
   return (

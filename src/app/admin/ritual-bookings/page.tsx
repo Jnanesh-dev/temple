@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import RitualBookingsTable from '@/components/admin/RitualBookingsTable'
 
+type RitualBooking = Awaited<ReturnType<typeof prisma.ritualBooking.findMany>>[0]
+
 export default async function AdminRitualBookingsPage() {
   const bookings = await prisma.ritualBooking.findMany({
     orderBy: { createdAt: 'desc' },
@@ -9,9 +11,9 @@ export default async function AdminRitualBookingsPage() {
 
   const stats = {
     total: bookings.length,
-    pending: bookings.filter((b) => b.status === 'pending').length,
-    confirmed: bookings.filter((b) => b.status === 'confirmed').length,
-    completed: bookings.filter((b) => b.status === 'completed').length,
+    pending: bookings.filter((b: RitualBooking) => b.status === 'pending').length,
+    confirmed: bookings.filter((b: RitualBooking) => b.status === 'confirmed').length,
+    completed: bookings.filter((b: RitualBooking) => b.status === 'completed').length,
   }
 
   return (
