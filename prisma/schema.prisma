@@ -27,7 +27,7 @@ model Event {
   title       String
   description String?  @db.Text
   eventDate   DateTime @map("event_date") @db.Date
-  eventTime   String?  @map("event_time") @db.Time
+  eventTime   String?  @map("event_time")
   eventType   String   @map("event_type") // 'festival', 'satsang', 'special-pooja', 'other'
   bannerUrl   String?  @map("banner_url")
   createdAt   DateTime @default(now()) @map("created_at")
@@ -112,7 +112,7 @@ model RitualBooking {
   phone          String
   ritualId       String   @map("ritual_id")
   preferredDate  DateTime? @map("preferred_date") @db.Date
-  preferredTime  String?  @map("preferred_time") @db.Time
+  preferredTime  String?  @map("preferred_time")
   specialRequests String? @map("special_requests") @db.Text
   status         String   @default("pending") // 'pending', 'confirmed', 'completed', 'cancelled'
   createdAt      DateTime @default(now()) @map("created_at")
