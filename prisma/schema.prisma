@@ -121,3 +121,72 @@ model RitualBooking {
   @@map("ritual_bookings")
 }
 
+model Deity {
+  id          String   @id @default(uuid())
+  name        String
+  description String   @db.Text
+  festivals   String[] // Array of festival names
+  specialDays String[] // Array of special days
+  imageUrl    String?  @map("image_url")
+  order       Int      @default(0) // For sorting
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("deities")
+}
+
+model Ritual {
+  id                String   @id @default(uuid())
+  name              String
+  description       String   @db.Text
+  suggestedDonation Decimal  @map("suggested_donation") @db.Decimal(10, 2)
+  duration          String
+  timing            String
+  order             Int      @default(0) // For sorting
+  isActive          Boolean  @default(true) @map("is_active")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@map("rituals")
+}
+
+model Leadership {
+  id          String   @id @default(uuid())
+  name        String
+  designation String
+  role        String
+  bio         String   @db.Text
+  message     String?  @db.Text
+  imageUrl    String?  @map("image_url")
+  order       Int      @default(0) // For sorting
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("leadership")
+}
+
+model DonationCategory {
+  id          String   @id @default(uuid())
+  name        String
+  description String   @db.Text
+  order       Int      @default(0) // For sorting
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("donation_categories")
+}
+
+model PageContent {
+  id          String   @id @default(uuid())
+  pageKey     String   @unique @map("page_key") // e.g., 'temple-about', 'school-about', 'home-hero'
+  title       String?
+  content     String   @db.Text // JSON or HTML content
+  metadata    String?  @db.Text // JSON for additional data
+  updatedBy   String?  @map("updated_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("page_content")
+}
+

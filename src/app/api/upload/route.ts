@@ -1,40 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { uploadFile } from '@/lib/minio'
-import { writeFile } from 'fs/promises'
-import { join } from 'path'
-import { unlink } from 'fs/promises'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { uploadToMinIO } from '@/lib/minio'
 
 export async function POST(request: NextRequest) {
+  const session = await getServerSession(authOptions)
+
+  if (!session || session.user.role !== 'admin') {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   try {
     const formData = await request.formData()
     const file = formData.get('file') as File
-    const folder = formData.get('folder') as string || 'public'
+    const folder = (formData.get('folder') as string) || 'public'
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
 
-    // Convert file to buffer
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
+    const buffer = Buffer.from(await file.arrayBuffer())
+    const fileName = `${Date.now()}-${file.name}`
+    const filePath = `${folder}/${fileName}`
 
-    // Generate unique filename
-    const timestamp = Date.now()
-    const originalName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
-    const fileName = `${timestamp}_${originalName}`
-
-    // Upload to MinIO
-    const fileUrl = await uploadFile(
-      buffer,
-      fileName,
-      file.type,
-      folder
-    )
+    const url = await uploadToMinIO(filePath, buffer, file.type)
 
     return NextResponse.json({
       success: true,
-      url: fileUrl,
-      fileName: fileName,
+      url,
+      fileName,
+      filePath,
     })
   } catch (error: any) {
     console.error('Upload error:', error)
@@ -44,4 +39,3 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-

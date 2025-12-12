@@ -13,6 +13,10 @@ import {
   Settings,
   LogOut,
   Users,
+  Sparkles,
+  BookOpen,
+  UserCircle,
+  Tag,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -20,7 +24,12 @@ const menuItems = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/events', label: 'Events', icon: Calendar },
   { href: '/admin/gallery', label: 'Gallery', icon: ImageIcon },
+  { href: '/admin/deities', label: 'Deities', icon: Sparkles },
+  { href: '/admin/rituals', label: 'Rituals & Services', icon: BookOpen },
+  { href: '/admin/leadership', label: 'Leadership', icon: UserCircle },
+  { href: '/admin/donation-categories', label: 'Donation Categories', icon: Tag },
   { href: '/admin/donations', label: 'Donations', icon: DollarSign },
+  { href: '/admin/ritual-bookings', label: 'Ritual Bookings', icon: Calendar },
   { href: '/admin/enquiries', label: 'Contact Enquiries', icon: Mail },
   { href: '/admin/admissions', label: 'Admissions', icon: GraduationCap },
   { href: '/admin/users', label: 'Users', icon: Users },
