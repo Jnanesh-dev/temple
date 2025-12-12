@@ -2,17 +2,17 @@ import { prisma } from '@/lib/prisma'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import EnquiriesTable from '@/components/admin/EnquiriesTable'
 
-type ContactEnquiry = Awaited<ReturnType<typeof prisma.contactEnquiry.findMany>>[0]
+type ContactEnquiry = Awaited<ReturnType<typeof prisma.contactEnquiry.findMany>>[number]
 
 export default async function AdminEnquiriesPage() {
-  const enquiries = await prisma.contactEnquiry.findMany({
+  const enquiries: ContactEnquiry[] = await prisma.contactEnquiry.findMany({
     orderBy: { createdAt: 'desc' },
   })
 
   const stats = {
     total: enquiries.length,
-    new: enquiries.filter((e: ContactEnquiry) => e.status === 'new').length,
-    replied: enquiries.filter((e: ContactEnquiry) => e.status === 'replied').length,
+    new: enquiries.filter((e) => e.status === 'new').length,
+    replied: enquiries.filter((e) => e.status === 'replied').length,
   }
 
   return (
