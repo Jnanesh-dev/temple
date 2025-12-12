@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Section from '@/components/ui/Section'
 import { Card, CardContent } from '@/components/ui/Card'
 import { leadership } from '@/lib/content'
@@ -126,9 +127,11 @@ export default function TempleAboutPage() {
                 <div className="text-center mb-6">
                   <div className="w-40 h-40 mx-auto mb-4 rounded-full bg-temple-off-white flex items-center justify-center overflow-hidden">
                     {guruji.image ? (
-                      <img
+                      <Image
                         src={guruji.image}
                         alt={guruji.name}
+                        width={160}
+                        height={160}
                         className="w-full h-full object-cover"
                       />
                     ) : (
