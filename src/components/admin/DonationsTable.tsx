@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Button from '@/components/ui/Button'
 
-interface Donation {
+export interface Donation {
   id: string
   donorName: string
   donorEmail: string
@@ -67,13 +67,12 @@ export default function DonationsTable({ donations }: { donations: Donation[] })
               <td className="py-3 px-4">{donation.purpose}</td>
               <td className="py-3 px-4">
                 <span
-                  className={`px-2 py-1 rounded text-xs ${
-                    donation.paymentStatus === 'completed'
+                  className={`px-2 py-1 rounded text-xs ${donation.paymentStatus === 'completed'
                       ? 'bg-green-100 text-green-700'
                       : donation.paymentStatus === 'pending'
-                      ? 'bg-yellow-100 text-yellow-700'
-                      : 'bg-red-100 text-red-700'
-                  }`}
+                        ? 'bg-yellow-100 text-yellow-700'
+                        : 'bg-red-100 text-red-700'
+                    }`}
                 >
                   {donation.paymentStatus}
                 </span>

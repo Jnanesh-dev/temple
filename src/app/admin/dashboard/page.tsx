@@ -146,7 +146,7 @@ async function RecentDonations() {
 
   return (
     <div className="space-y-3">
-      {donations.map((donation) => (
+      {donations.map((donation: any) => (
         <div key={donation.id} className="flex items-center justify-between pb-3 border-b last:border-0">
           <div>
             <p className="font-medium text-sm">{donation.donorName}</p>
@@ -156,16 +156,15 @@ async function RecentDonations() {
           </div>
           <div className="text-right">
             <p className="font-semibold text-temple-maroon">
-              ₹{donation.amount.toLocaleString()}
+              ₹{Number(donation.amount).toLocaleString()}
             </p>
             <span
-              className={`text-xs px-2 py-1 rounded ${
-                donation.paymentStatus === 'completed'
+              className={`text-xs px-2 py-1 rounded ${donation.paymentStatus === 'completed'
                   ? 'bg-green-100 text-green-700'
                   : donation.paymentStatus === 'pending'
-                  ? 'bg-yellow-100 text-yellow-700'
-                  : 'bg-red-100 text-red-700'
-              }`}
+                    ? 'bg-yellow-100 text-yellow-700'
+                    : 'bg-red-100 text-red-700'
+                }`}
             >
               {donation.paymentStatus}
             </span>
@@ -195,20 +194,19 @@ async function RecentEnquiries() {
 
   return (
     <div className="space-y-3">
-      {enquiries.map((enquiry) => (
+      {enquiries.map((enquiry: any) => (
         <div key={enquiry.id} className="flex items-center justify-between pb-3 border-b last:border-0">
           <div>
             <p className="font-medium text-sm">{enquiry.name}</p>
             <p className="text-xs text-gray-500">{enquiry.subject}</p>
           </div>
           <span
-            className={`text-xs px-2 py-1 rounded ${
-              enquiry.status === 'new'
+            className={`text-xs px-2 py-1 rounded ${enquiry.status === 'new'
                 ? 'bg-blue-100 text-blue-700'
                 : enquiry.status === 'replied'
-                ? 'bg-green-100 text-green-700'
-                : 'bg-gray-100 text-gray-700'
-            }`}
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-gray-100 text-gray-700'
+              }`}
           >
             {enquiry.status}
           </span>
