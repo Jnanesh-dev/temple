@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Edit, Trash2 } from 'lucide-react'
 import Button from '@/components/ui/Button'
 
-interface Ritual {
+export interface Ritual {
   id: string
   name: string
   description: string
@@ -74,11 +74,10 @@ export default function RitualsTable({ rituals }: { rituals: Ritual[] }) {
               <td className="py-3 px-4 text-sm">{ritual.timing}</td>
               <td className="py-3 px-4">
                 <span
-                  className={`px-2 py-1 rounded text-xs ${
-                    ritual.isActive
+                  className={`px-2 py-1 rounded text-xs ${ritual.isActive
                       ? 'bg-green-100 text-green-700'
                       : 'bg-gray-100 text-gray-700'
-                  }`}
+                    }`}
                 >
                   {ritual.isActive ? 'Active' : 'Inactive'}
                 </span>

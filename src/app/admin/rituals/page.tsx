@@ -3,12 +3,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import Link from 'next/link'
 import { Plus } from 'lucide-react'
-import RitualsTable from '@/components/admin/RitualsTable'
+import RitualsTable, { Ritual } from '@/components/admin/RitualsTable'
 
 export default async function AdminRitualsPage() {
-  const rituals = await prisma.ritual.findMany({
+  const rawRituals = await prisma.ritual.findMany({
     orderBy: { order: 'asc' },
   })
+
+  const rituals: Ritual[] = rawRituals.map((r: any) => ({
+    id: r.id,
+    name: r.name,
+    description: r.description,
+    suggestedDonation: Number(r.suggestedDonation),
+    duration: r.duration,
+    timing: r.timing,
+    isActive: r.isActive,
+    order: r.order,
+  }))
 
   return (
     <div>
