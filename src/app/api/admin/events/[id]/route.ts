@@ -19,13 +19,14 @@ const eventSchema = z.object({
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin()
+    const { id } = await params
 
     const event = await prisma.event.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!event) {
@@ -43,10 +44,11 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin()
+    const { id } = await params
     const body = await request.json()
 
     // Validate input with Zod
@@ -64,7 +66,7 @@ export async function PUT(
 
     // Check if event exists
     const existingEvent = await prisma.event.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!existingEvent) {
@@ -89,7 +91,7 @@ export async function PUT(
     }
 
     const event = await prisma.event.update({
-      where: { id: params.id },
+      where: { id },
       data: sanitizedData,
     })
 
@@ -102,14 +104,15 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin()
+    const { id } = await params
 
     // Check if event exists
     const existingEvent = await prisma.event.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!existingEvent) {
@@ -119,7 +122,7 @@ export async function DELETE(
     }
 
     await prisma.event.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({ success: true })

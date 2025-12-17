@@ -18,13 +18,14 @@ const ritualSchema = z.object({
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin()
+    const { id } = await params
 
     const ritual = await prisma.ritual.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     if (!ritual) {
@@ -42,10 +43,11 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin()
+    const { id } = await params
     const body = await request.json()
 
     // Validate input with Zod
@@ -63,7 +65,7 @@ export async function PUT(
 
     // Check if ritual exists
     const existingRitual = await prisma.ritual.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     if (!existingRitual) {
@@ -84,7 +86,7 @@ export async function PUT(
     }
 
     const ritual = await prisma.ritual.update({
-      where: { id: params.id },
+      where: { id: id },
       data: sanitizedData,
     })
 
@@ -97,14 +99,15 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin()
+    const { id } = await params
 
     // Check if ritual exists
     const existingRitual = await prisma.ritual.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     if (!existingRitual) {
@@ -114,7 +117,7 @@ export async function DELETE(
     }
 
     await prisma.ritual.delete({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     return NextResponse.json({ success: true })

@@ -6,13 +6,14 @@ import { deleteFile } from '@/lib/minio'
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin()
+    const { id } = await params
 
     const image = await prisma.galleryImage.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!image) {
@@ -31,7 +32,7 @@ export async function DELETE(
 
     // Delete from database
     await prisma.galleryImage.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({ success: true })

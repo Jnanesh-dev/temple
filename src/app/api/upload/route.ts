@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { uploadToMinIO } from '@/lib/minio'
-import { handleApiError, AuthorizationError, ValidationError } from '@/lib/errors'
-import { checkRateLimit, RateLimitError } from '@/lib/rateLimit'
+import { handleApiError, AuthorizationError, ValidationError, RateLimitError } from '@/lib/errors'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 // Allowed file types (MIME types)
 const ALLOWED_MIME_TYPES = [

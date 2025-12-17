@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { query } from '@/lib/db'
-import { checkRateLimit, RateLimitError } from '@/lib/rateLimit'
+import { checkRateLimit } from '@/lib/rateLimit'
 import { sanitizeString, sanitizeEmail, sanitizePhone, sanitizeNumber } from '@/lib/sanitize'
-import { handleApiError, ValidationError } from '@/lib/errors'
+import { handleApiError, ValidationError, RateLimitError } from '@/lib/errors'
 import { z } from 'zod'
 
 // Validation schema

@@ -1,37 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { requireAdmin } from '@/lib/admin'
 import { prisma } from '@/lib/prisma'
+import { handleApiError } from '@/lib/errors'
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getServerSession(authOptions)
-
-  if (!session || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
-  // Prevent deleting yourself
-  if (session.user.id === params.id) {
-    return NextResponse.json(
-      { error: 'You cannot delete your own account' },
-      { status: 400 }
-    )
-  }
-
   try {
+    const session = await requireAdmin()
+    const { id } = await params
+
+    // Prevent deleting yourself
+    if (session.user.id === id) {
+      return NextResponse.json(
+        { error: 'You cannot delete your own account' },
+        { status: 400 }
+      )
+    }
+
     await prisma.user.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({ success: true })
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message || 'Failed to delete user' },
-      { status: 500 }
-    )
+  } catch (error) {
+    const { message, statusCode } = handleApiError(error)
+    return NextResponse.json({ error: message }, { status: statusCode })
   }
 }
-

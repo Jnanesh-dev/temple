@@ -15,7 +15,7 @@ export class AppError extends Error {
 }
 
 export class ValidationError extends AppError {
-  constructor(message: string, public fields?: Record<string, string[]>) {
+  constructor(message: string, public fields?: Record<string, string[] | undefined>) {
     super(message, 400)
   }
 }

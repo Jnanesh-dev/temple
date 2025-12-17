@@ -18,13 +18,14 @@ const leadershipSchema = z.object({
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin()
+    const { id } = await params
 
     const leader = await prisma.leadership.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     if (!leader) {
@@ -42,10 +43,11 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin()
+    const { id } = await params
     const body = await request.json()
 
     // Validate input with Zod
@@ -63,7 +65,7 @@ export async function PUT(
 
     // Check if leader exists
     const existingLeader = await prisma.leadership.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     if (!existingLeader) {
@@ -89,7 +91,7 @@ export async function PUT(
     }
 
     const leader = await prisma.leadership.update({
-      where: { id: params.id },
+      where: { id: id },
       data: sanitizedData,
     })
 
@@ -102,14 +104,15 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin()
+    const { id } = await params
 
     // Check if leader exists
     const existingLeader = await prisma.leadership.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     if (!existingLeader) {
@@ -119,7 +122,7 @@ export async function DELETE(
     }
 
     await prisma.leadership.delete({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     return NextResponse.json({ success: true })

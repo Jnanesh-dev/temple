@@ -17,13 +17,14 @@ const deitySchema = z.object({
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin()
+    const { id } = await params
 
     const deity = await prisma.deity.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!deity) {
@@ -41,10 +42,11 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin()
+    const { id } = await params
     const body = await request.json()
 
     // Validate input with Zod
@@ -62,7 +64,7 @@ export async function PUT(
 
     // Check if deity exists
     const existingDeity = await prisma.deity.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!existingDeity) {
@@ -87,7 +89,7 @@ export async function PUT(
     }
 
     const deity = await prisma.deity.update({
-      where: { id: params.id },
+      where: { id },
       data: sanitizedData,
     })
 
@@ -100,14 +102,15 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin()
+    const { id } = await params
 
     // Check if deity exists
     const existingDeity = await prisma.deity.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!existingDeity) {
@@ -117,7 +120,7 @@ export async function DELETE(
     }
 
     await prisma.deity.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({ success: true })
