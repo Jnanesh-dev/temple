@@ -89,7 +89,7 @@ export function getClientIP(request: NextRequest): string {
   }
 
   // Fallback (shouldn't happen in production with proper proxy setup)
-  return request.ip || 'unknown'
+  return 'unknown'
 }
 
 /**
