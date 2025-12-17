@@ -2,6 +2,21 @@ import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
+import { rateLimit } from './rateLimit'
+
+// Track failed login attempts per email (simple in-memory approach)
+// For production, use Redis or database
+const failedLoginAttempts = new Map<string, { count: number; resetTime: number }>()
+
+// Clean up old entries every 5 minutes
+setInterval(() => {
+  const now = Date.now()
+  for (const [key, record] of failedLoginAttempts.entries()) {
+    if (now > record.resetTime) {
+      failedLoginAttempts.delete(key)
+    }
+  }
+}, 5 * 60 * 1000)
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -16,22 +31,44 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Email and password required')
         }
 
+        // Rate limiting: 5 failed attempts per 15 minutes per email
+        const emailKey = credentials.email.toLowerCase()
+        const now = Date.now()
+        const attemptRecord = failedLoginAttempts.get(emailKey)
+
+        if (attemptRecord && now < attemptRecord.resetTime) {
+          if (attemptRecord.count >= 5) {
+            const waitTime = Math.ceil((attemptRecord.resetTime - now) / 1000 / 60)
+            throw new Error(
+              `Too many failed login attempts. Please try again in ${waitTime} minute(s).`
+            )
+          }
+        }
+
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         })
 
-        if (!user) {
+        const isPasswordValid = user
+          ? await bcrypt.compare(credentials.password, user.passwordHash)
+          : false
+
+        // Record failed attempt
+        if (!user || !isPasswordValid) {
+          const record = failedLoginAttempts.get(emailKey)
+          if (record && now < record.resetTime) {
+            record.count++
+          } else {
+            failedLoginAttempts.set(emailKey, {
+              count: 1,
+              resetTime: now + 15 * 60 * 1000, // 15 minutes
+            })
+          }
           throw new Error('Invalid email or password')
         }
 
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password,
-          user.passwordHash
-        )
-
-        if (!isPasswordValid) {
-          throw new Error('Invalid email or password')
-        }
+        // Clear failed attempts on successful login
+        failedLoginAttempts.delete(emailKey)
 
         if (user.role !== 'admin') {
           throw new Error('Access denied. Admin only.')
