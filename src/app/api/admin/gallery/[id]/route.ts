@@ -1,33 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { requireAdmin } from '@/lib/admin'
+import { handleApiError, NotFoundError } from '@/lib/errors'
 import { deleteFile } from '@/lib/minio'
 
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await getServerSession(authOptions)
-
-  if (!session || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
   try {
+    await requireAdmin()
+
     const image = await prisma.galleryImage.findUnique({
       where: { id: params.id },
     })
 
     if (!image) {
-      return NextResponse.json({ error: 'Image not found' }, { status: 404 })
+      const error = new NotFoundError('Image not found')
+      const { message, statusCode } = handleApiError(error)
+      return NextResponse.json({ error: message }, { status: statusCode })
     }
 
-    // Delete from MinIO
+    // Delete from MinIO (best effort - don't fail if this fails)
     try {
       await deleteFile(image.fileUrl)
     } catch (error) {
       console.error('Error deleting from MinIO:', error)
+      // Continue with database deletion even if MinIO deletion fails
     }
 
     // Delete from database
@@ -36,11 +35,8 @@ export async function DELETE(
     })
 
     return NextResponse.json({ success: true })
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message || 'Failed to delete image' },
-      { status: 500 }
-    )
+  } catch (error) {
+    const { message, statusCode } = handleApiError(error)
+    return NextResponse.json({ error: message }, { status: statusCode })
   }
 }
-

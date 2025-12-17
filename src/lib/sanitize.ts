@@ -1,26 +1,24 @@
 /**
  * Input sanitization utilities
- * For production, consider using:
- * - DOMPurify for HTML sanitization
- * - validator.js for string validation
+ * Uses DOMPurify for HTML sanitization
  */
+import DOMPurify from 'isomorphic-dompurify'
 
 /**
  * Sanitize HTML content - removes potentially dangerous tags and attributes
- * In production, use DOMPurify: npm install isomorphic-dompurify
+ * Uses DOMPurify for robust HTML sanitization
  */
 export function sanitizeHtml(html: string): string {
-  // Basic HTML sanitization - remove script tags and dangerous attributes
-  // TODO: Install and use DOMPurify for production
-  // import DOMPurify from 'isomorphic-dompurify'
-  // return DOMPurify.sanitize(html, { ALLOWED_TAGS: ['p', 'br', 'strong', 'em'] })
-  
-  // Temporary basic sanitization
-  return html
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/on\w+="[^"]*"/gi, '')
-    .replace(/on\w+='[^']*'/gi, '')
-    .trim()
+  if (typeof html !== 'string') {
+    return ''
+  }
+
+  // Sanitize HTML with DOMPurify - only allow safe tags
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+    ALLOWED_ATTR: [],
+    ALLOW_DATA_ATTR: false,
+  }).trim()
 }
 
 /**

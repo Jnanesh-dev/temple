@@ -1,51 +1,72 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { requireAdmin } from '@/lib/admin'
+import { handleApiError, ValidationError } from '@/lib/errors'
+import { sanitizeString, sanitizeHtml } from '@/lib/sanitize'
+import { z } from 'zod'
+
+// Validation schema
+const ritualSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(200),
+  description: z.string().min(1, 'Description is required').max(10000),
+  suggestedDonation: z.number().min(0, 'Suggested donation must be positive').max(10000000),
+  duration: z.string().min(1, 'Duration is required').max(100),
+  timing: z.string().min(1, 'Timing is required').max(200),
+  order: z.number().int().min(0).default(0),
+  isActive: z.boolean().default(true),
+})
 
 export async function GET(request: NextRequest) {
-  const session = await getServerSession(authOptions)
+  try {
+    await requireAdmin()
 
-  if (!session || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const rituals = await prisma.ritual.findMany({
+      orderBy: { order: 'asc' },
+    })
+
+    return NextResponse.json({ rituals })
+  } catch (error) {
+    const { message, statusCode } = handleApiError(error)
+    return NextResponse.json({ error: message }, { status: statusCode })
   }
-
-  const rituals = await prisma.ritual.findMany({
-    orderBy: { order: 'asc' },
-  })
-
-  return NextResponse.json({ rituals })
 }
 
 export async function POST(request: NextRequest) {
-  const session = await getServerSession(authOptions)
-
-  if (!session || session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
   try {
+    await requireAdmin()
     const body = await request.json()
-    const { name, description, suggestedDonation, duration, timing, order, isActive } = body
+
+    // Validate input with Zod
+    const validationResult = ritualSchema.safeParse(body)
+
+    if (!validationResult.success) {
+      const error = new ValidationError('Validation failed', {
+        fields: validationResult.error.flatten().fieldErrors,
+      })
+      const { message, statusCode, details } = handleApiError(error)
+      return NextResponse.json({ error: message, details }, { status: statusCode })
+    }
+
+    const data = validationResult.data
+
+    // Sanitize inputs
+    const sanitizedData = {
+      name: sanitizeString(data.name),
+      description: sanitizeHtml(data.description), // HTML content
+      suggestedDonation: data.suggestedDonation,
+      duration: sanitizeString(data.duration),
+      timing: sanitizeString(data.timing),
+      order: data.order,
+      isActive: data.isActive,
+    }
 
     const ritual = await prisma.ritual.create({
-      data: {
-        name,
-        description,
-        suggestedDonation: parseFloat(suggestedDonation),
-        duration,
-        timing,
-        order: order || 0,
-        isActive: isActive !== undefined ? isActive : true,
-      },
+      data: sanitizedData,
     })
 
     return NextResponse.json({ success: true, ritual })
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message || 'Failed to create ritual' },
-      { status: 500 }
-    )
+  } catch (error) {
+    const { message, statusCode } = handleApiError(error)
+    return NextResponse.json({ error: message }, { status: statusCode })
   }
 }
-
