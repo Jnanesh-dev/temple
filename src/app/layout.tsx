@@ -1,11 +1,7 @@
 import type { Metadata } from 'next'
-import { Inter, Playfair_Display } from 'next/font/google'
 import './globals.css'
 import MainLayout from '@/components/layout/MainLayout'
 import StructuredData from '@/components/SEO/StructuredData'
-
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
-const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-serif' })
 
 export const metadata: Metadata = {
   title: {
@@ -73,7 +69,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
+    <html lang="en">
       <body className="font-sans antialiased">
         <StructuredData data={templeStructuredData} />
         <StructuredData data={schoolStructuredData} />
@@ -82,4 +78,3 @@ export default function RootLayout({
     </html>
   )
 }
-

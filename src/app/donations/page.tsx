@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/prisma'
 import DonationsClient from './DonationsClient'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata = {
   title: 'Make a Donation | Shree Durga Adishakti Temple',
   description: 'Support the temple and school through your generous contributions. Choose from various causes including Annadan, Gau Seva, and Education.',

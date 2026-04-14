@@ -2,7 +2,6 @@ import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
-import { rateLimit } from './rateLimit'
 
 // Track failed login attempts per email (simple in-memory approach)
 // For production, use Redis or database
@@ -108,4 +107,3 @@ export const authOptions: NextAuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET || 'your-secret-key-change-in-production',
 }
-

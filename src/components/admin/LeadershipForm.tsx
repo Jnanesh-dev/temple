@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
@@ -10,6 +10,7 @@ import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Textarea from '@/components/ui/Textarea'
 import Link from 'next/link'
+import AdminImageUploadField from './AdminImageUploadField'
 
 const leadershipSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
@@ -31,9 +32,12 @@ interface LeadershipFormProps {
 export default function LeadershipForm({ initialData, isEditing = false }: LeadershipFormProps) {
   const router = useRouter()
   const [submitting, setSubmitting] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
   const {
     register,
     handleSubmit,
+    control,
+    setValue,
     formState: { errors },
   } = useForm<LeadershipFormData>({
     resolver: zodResolver(leadershipSchema),
@@ -45,6 +49,7 @@ export default function LeadershipForm({ initialData, isEditing = false }: Leade
       order: 0,
     }
   })
+  const imageUrl = useWatch({ control, name: 'imageUrl' })
 
   const onSubmit = async (data: LeadershipFormData) => {
     setSubmitting(true)
@@ -128,22 +133,24 @@ export default function LeadershipForm({ initialData, isEditing = false }: Leade
             </div>
           </div>
 
-          <div>
-            <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700 mb-1">
-              Profile Image URL
-            </label>
-            <Input 
-              id="imageUrl" 
-              {...register('imageUrl')} 
-              placeholder="https://example.com/image.jpg" 
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Upload image to gallery first, then paste URL here
-            </p>
-            {errors.imageUrl && (
-              <p className="text-red-600 text-sm mt-1">{errors.imageUrl.message}</p>
-            )}
-          </div>
+          <input type="hidden" {...register('imageUrl')} />
+          <AdminImageUploadField
+            label="Profile Image"
+            value={imageUrl}
+            onChange={(url) =>
+              setValue('imageUrl', url, {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
+            folder="public/leadership"
+            helpText="Upload a profile image directly from your computer."
+            previewClassName="aspect-[4/5]"
+            onUploadingChange={setUploadingImage}
+          />
+          {errors.imageUrl && (
+            <p className="text-red-600 text-sm -mt-3">{errors.imageUrl.message}</p>
+          )}
 
           <div>
             <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-1">
@@ -176,7 +183,7 @@ export default function LeadershipForm({ initialData, isEditing = false }: Leade
           </div>
 
           <div className="flex gap-4 pt-4 border-t">
-            <Button type="submit" disabled={submitting}>
+            <Button type="submit" disabled={submitting || uploadingImage}>
               {submitting ? (isEditing ? 'Updating...' : 'Creating...') : (isEditing ? 'Update Profile' : 'Create Profile')}
             </Button>
             <Link href="/admin/leadership">

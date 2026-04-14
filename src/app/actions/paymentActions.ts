@@ -9,13 +9,14 @@ import { sendDonationNotification } from './emailActions';
  * Creates a Razorpay order for a donation.
  */
 export async function createDonationOrder(formData: {
-  amount: number;
-  name: string;
-  email: string;
-  purpose: string;
-  categoryName?: string;
-  frequency: string;
-  address?: string;
+  amount: number
+  name: string
+  email: string
+  phone: string
+  purpose: string
+  categoryName?: string
+  frequency: string
+  address?: string
 }) {
   try {
     const razorpay = await getRazorpayClient();
@@ -78,15 +79,15 @@ async function markDonationAsCompleted(donationId: string, paymentId: string, si
   if (!donation || donation.paymentStatus === 'completed') return;
 
   // Update DB
-  await prisma.donation.update({
-    where: { id: donationId },
-    data: {
-      paymentStatus: 'completed',
-      paymentId: paymentId,
-      razorpayPaymentId: paymentId,
-      razorpaySignature: signature,
-    },
-  });
+    await prisma.donation.update({
+      where: { id: donationId },
+      data: {
+        paymentStatus: 'completed',
+        paymentId,
+        transactionId: paymentId,
+        razorpaySignature: signature,
+      },
+    });
 
   // Send Email Notification
   try {

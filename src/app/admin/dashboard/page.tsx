@@ -7,7 +7,6 @@ import {
   Mail,
   GraduationCap,
   Calendar,
-  TrendingUp,
 } from 'lucide-react'
 
 export default async function AdminDashboard() {
@@ -215,4 +214,3 @@ async function RecentEnquiries() {
     </div>
   )
 }
-

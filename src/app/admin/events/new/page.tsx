@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
+import { useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
@@ -10,6 +11,7 @@ import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Textarea from '@/components/ui/Textarea'
 import Select from '@/components/ui/Select'
+import AdminImageUploadField from '@/components/admin/AdminImageUploadField'
 
 const eventSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters'),
@@ -32,13 +34,17 @@ const eventTypes = [
 export default function NewEventPage() {
   const router = useRouter()
   const [submitting, setSubmitting] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
   const {
     register,
     handleSubmit,
+    control,
+    setValue,
     formState: { errors },
   } = useForm<EventFormData>({
     resolver: zodResolver(eventSchema),
   })
+  const bannerUrl = useWatch({ control, name: 'bannerUrl' })
 
   const onSubmit = async (data: EventFormData) => {
     setSubmitting(true)
@@ -147,25 +153,24 @@ export default function NewEventPage() {
               )}
             </div>
 
-            <div>
-              <label
-                htmlFor="bannerUrl"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Banner Image URL
-              </label>
-              <Input
-                id="bannerUrl"
-                {...register('bannerUrl')}
-                placeholder="https://example.com/image.jpg"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Upload image to gallery first, then paste URL here
-              </p>
-            </div>
+            <input type="hidden" {...register('bannerUrl')} />
+            <AdminImageUploadField
+              label="Banner Image"
+              value={bannerUrl}
+              onChange={(url) =>
+                setValue('bannerUrl', url, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                })
+              }
+              folder="public/events"
+              helpText="Upload a banner image from your computer. The uploaded file will be used for this event."
+              previewClassName="aspect-video"
+              onUploadingChange={setUploadingImage}
+            />
 
             <div className="flex gap-4">
-              <Button type="submit" disabled={submitting}>
+              <Button type="submit" disabled={submitting || uploadingImage}>
                 {submitting ? 'Creating...' : 'Create Event'}
               </Button>
               <Button
@@ -182,4 +187,3 @@ export default function NewEventPage() {
     </div>
   )
 }
-

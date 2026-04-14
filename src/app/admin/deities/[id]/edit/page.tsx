@@ -3,12 +3,14 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
+import { useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Textarea from '@/components/ui/Textarea'
+import AdminImageUploadField from '@/components/admin/AdminImageUploadField'
 
 const deitySchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -27,14 +29,17 @@ export default function EditDeityPage() {
   const deityId = params.id as string
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
   const {
     register,
     handleSubmit,
+    control,
     setValue,
     formState: { errors },
   } = useForm<DeityFormData>({
     resolver: zodResolver(deitySchema),
   })
+  const imageUrl = useWatch({ control, name: 'imageUrl' })
 
   useEffect(() => {
     const fetchDeity = async () => {
@@ -165,19 +170,21 @@ export default function EditDeityPage() {
               />
             </div>
 
-            <div>
-              <label
-                htmlFor="imageUrl"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Image URL
-              </label>
-              <Input
-                id="imageUrl"
-                {...register('imageUrl')}
-                placeholder="https://example.com/image.jpg"
-              />
-            </div>
+            <input type="hidden" {...register('imageUrl')} />
+            <AdminImageUploadField
+              label="Deity Image"
+              value={imageUrl}
+              onChange={(url) =>
+                setValue('imageUrl', url, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                })
+              }
+              folder="public/deities"
+              helpText="Upload a new deity image from your computer or keep the current one."
+              previewClassName="aspect-[4/5]"
+              onUploadingChange={setUploadingImage}
+            />
 
             <div>
               <label htmlFor="order" className="block text-sm font-medium text-gray-700 mb-1">
@@ -191,7 +198,7 @@ export default function EditDeityPage() {
             </div>
 
             <div className="flex gap-4">
-              <Button type="submit" disabled={submitting}>
+              <Button type="submit" disabled={submitting || uploadingImage}>
                 {submitting ? 'Updating...' : 'Update Deity'}
               </Button>
               <Button type="button" variant="outline" onClick={() => router.back()}>
@@ -204,4 +211,3 @@ export default function EditDeityPage() {
     </div>
   )
 }
-

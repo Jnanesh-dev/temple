@@ -2,15 +2,15 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useForm, useFieldArray } from 'react-hook-form'
+import { useForm, useFieldArray, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Textarea from '@/components/ui/Textarea'
-import { Trash2, Plus, Upload, X } from 'lucide-react'
-import Image from 'next/image'
+import { Trash2, Plus } from 'lucide-react'
+import AdminImageUploadField from './AdminImageUploadField'
 
 const tierSchema = z.object({
   label: z.string().min(1, 'Label is required'),
@@ -36,7 +36,6 @@ interface DonationCategoryFormProps {
 export default function DonationCategoryForm({ initialData, id }: DonationCategoryFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [previewImage, setPreviewImage] = useState<string | null>(initialData?.imageUrl || null)
   const [uploading, setUploading] = useState(false)
 
   const {
@@ -58,33 +57,7 @@ export default function DonationCategoryForm({ initialData, id }: DonationCatego
     control,
     name: 'tiers',
   })
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    setUploading(true)
-    try {
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('folder', 'donations')
-
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (!res.ok) throw new Error('Upload failed')
-
-      const { url } = await res.json()
-      setValue('imageUrl', url)
-      setPreviewImage(url)
-    } catch (error) {
-      alert('Failed to upload image')
-    } finally {
-      setUploading(false)
-    }
-  }
+  const imageUrl = useWatch({ control, name: 'imageUrl' })
 
   const onSubmit = async (data: CategoryFormData) => {
     setLoading(true)
@@ -190,36 +163,21 @@ export default function DonationCategoryForm({ initialData, id }: DonationCatego
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="relative aspect-video w-full border-2 border-dashed border-gray-300 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center">
-                  {previewImage ? (
-                    <>
-                      <Image src={previewImage} alt="Preview" fill className="object-cover" />
-                      <button
-                        type="button"
-                        onClick={() => { setPreviewImage(null); setValue('imageUrl', '') }}
-                        className="absolute top-2 right-2 p-1 bg-red-600 text-white rounded-full shadow-lg"
-                      >
-                        <X size={14} />
-                      </button>
-                    </>
-                  ) : (
-                    <div className="text-center p-4">
-                      <Upload className="mx-auto h-12 w-12 text-gray-300" />
-                      <div className="mt-2 flex text-sm text-gray-600">
-                        <label className="relative cursor-pointer bg-white rounded-md font-medium text-temple-maroon hover:text-red-700">
-                          <span>Upload a file</span>
-                          <input type="file" className="sr-only" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
-                        </label>
-                      </div>
-                      <p className="text-xs text-gray-500">PNG, JPG, WEBP up to 2MB</p>
-                    </div>
-                  )}
-                  {uploading && (
-                    <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-temple-maroon"></div>
-                    </div>
-                  )}
-                </div>
+                <input type="hidden" {...register('imageUrl')} />
+                <AdminImageUploadField
+                  label="Thumbnail Image"
+                  value={imageUrl}
+                  onChange={(url) =>
+                    setValue('imageUrl', url, {
+                      shouldDirty: true,
+                      shouldValidate: true,
+                    })
+                  }
+                  folder="public/donation-categories"
+                  helpText="Upload a category thumbnail from your computer."
+                  previewClassName="aspect-video"
+                  onUploadingChange={setUploading}
+                />
               </div>
             </CardContent>
           </Card>

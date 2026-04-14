@@ -4,8 +4,8 @@
 
 @layer base {
   :root {
-    --font-serif: 'Playfair Display', serif;
-    --font-sans: 'Inter', sans-serif;
+    --font-serif: Georgia, 'Times New Roman', Times, serif;
+    --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
 
   body {
@@ -35,4 +35,3 @@
     @apply text-2xl md:text-3xl font-serif font-semibold text-temple-maroon;
   }
 }
-

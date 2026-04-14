@@ -57,7 +57,7 @@ export default function DonationSuccessPage() {
 
             <div className="pt-6 border-t border-gray-100 text-center">
               <p className="text-gray-600 italic">
-                "May the divine blessings of Shree Durga Adishakti be with you and your family."
+                &ldquo;May the divine blessings of Shree Durga Adishakti be with you and your family.&rdquo;
               </p>
             </div>
           </CardContent>

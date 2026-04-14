@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
+import { useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
@@ -10,6 +11,7 @@ import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Textarea from '@/components/ui/Textarea'
 import Select from '@/components/ui/Select'
+import AdminImageUploadField from '@/components/admin/AdminImageUploadField'
 
 const eventSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters'),
@@ -35,14 +37,17 @@ export default function EditEventPage() {
   const eventId = params.id as string
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
   const {
     register,
     handleSubmit,
+    control,
     setValue,
     formState: { errors },
   } = useForm<EventFormData>({
     resolver: zodResolver(eventSchema),
   })
+  const bannerUrl = useWatch({ control, name: 'bannerUrl' })
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -180,22 +185,24 @@ export default function EditEventPage() {
               )}
             </div>
 
-            <div>
-              <label
-                htmlFor="bannerUrl"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Banner Image URL
-              </label>
-              <Input
-                id="bannerUrl"
-                {...register('bannerUrl')}
-                placeholder="https://example.com/image.jpg"
-              />
-            </div>
+            <input type="hidden" {...register('bannerUrl')} />
+            <AdminImageUploadField
+              label="Banner Image"
+              value={bannerUrl}
+              onChange={(url) =>
+                setValue('bannerUrl', url, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                })
+              }
+              folder="public/events"
+              helpText="Upload a new banner image from your computer or keep the current one."
+              previewClassName="aspect-video"
+              onUploadingChange={setUploadingImage}
+            />
 
             <div className="flex gap-4">
-              <Button type="submit" disabled={submitting}>
+              <Button type="submit" disabled={submitting || uploadingImage}>
                 {submitting ? 'Updating...' : 'Update Event'}
               </Button>
               <Button type="button" variant="outline" onClick={() => router.back()}>
@@ -208,4 +215,3 @@ export default function EditEventPage() {
     </div>
   )
 }
-

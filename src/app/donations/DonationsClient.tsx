@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Section from '@/components/ui/Section'
@@ -43,7 +43,7 @@ export default function DonationsClient({ initialCategories }: { initialCategori
     register,
     handleSubmit,
     setValue,
-    watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<DonationFormData>({
     resolver: zodResolver(donationSchema),
@@ -54,7 +54,7 @@ export default function DonationsClient({ initialCategories }: { initialCategori
     },
   })
 
-  const amount = watch('amount')
+  const amount = useWatch({ control, name: 'amount' })
 
   const onSubmit = async (data: DonationFormData) => {
     try {

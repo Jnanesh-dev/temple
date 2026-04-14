@@ -9,7 +9,11 @@ import { z } from 'zod'
 const eventSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200, 'Title must be less than 200 characters'),
   description: z.string().max(5000, 'Description must be less than 5000 characters').optional(),
-  eventDate: z.string().datetime('Invalid date format').or(z.date()),
+  eventDate: z
+    .string()
+    .min(1, 'Event date is required')
+    .refine((value) => !Number.isNaN(Date.parse(value)), 'Invalid date format')
+    .or(z.date()),
   eventTime: z.string().max(10).optional(),
   eventType: z.enum(['festival', 'satsang', 'special-pooja', 'other'], {
     errorMap: () => ({ message: 'Invalid event type' }),

@@ -2,7 +2,15 @@ import { withAuth } from 'next-auth/middleware'
 import { NextResponse } from 'next/server'
 
 export default withAuth(
-  function middleware(req) {
+  function proxy(req) {
+    if (req.nextUrl.pathname === '/admin/login') {
+      if (req.nextauth.token?.role === 'admin') {
+        return NextResponse.redirect(new URL('/admin/dashboard', req.url))
+      }
+
+      return NextResponse.next()
+    }
+
     const token = req.nextauth.token
     const isAdmin = token?.role === 'admin'
 
@@ -15,14 +23,14 @@ export default withAuth(
   {
     callbacks: {
       authorized: ({ token, req }) => {
-        // Allow access to login page without authentication
         if (req.nextUrl.pathname === '/admin/login') {
           return true
         }
-        // Only allow access to admin routes if user is admin
+
         if (req.nextUrl.pathname.startsWith('/admin')) {
           return token?.role === 'admin'
         }
+
         return true
       },
     },

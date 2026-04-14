@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
@@ -17,6 +18,8 @@ import {
   BookOpen,
   UserCircle,
   Tag,
+  Menu,
+  X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -38,50 +41,98 @@ const menuItems = [
 
 export default function AdminSidebar() {
   const pathname = usePathname()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const isActiveRoute = (href: string) => {
+    if (href === '/admin/dashboard') {
+      return pathname === href
+    }
+
+    return pathname === href || pathname.startsWith(`${href}/`)
+  }
+
+  const renderNavLinks = (onNavigate?: () => void) =>
+    menuItems.map((item) => {
+      const Icon = item.icon
+      const isActive = isActiveRoute(item.href)
+
+      return (
+        <li key={item.href}>
+          <Link
+            href={item.href}
+            onClick={onNavigate}
+            className={cn(
+              'flex items-center gap-3 px-4 py-3 rounded-lg transition-colors',
+              isActive
+                ? 'bg-temple-gold text-temple-maroon font-medium'
+                : 'text-gray-200 hover:bg-temple-maroon-dark hover:text-white'
+            )}
+          >
+            <Icon size={20} />
+            <span>{item.label}</span>
+          </Link>
+        </li>
+      )
+    })
 
   return (
-    <aside className="w-64 bg-temple-maroon text-white min-h-screen fixed left-0 top-0">
-      <div className="p-6 border-b border-temple-maroon-dark">
-        <h1 className="text-xl font-serif font-bold">Admin Portal</h1>
-        <p className="text-sm text-gray-300 mt-1">Temple Management</p>
+    <>
+      <div className="sticky top-0 z-40 border-b border-temple-maroon-dark bg-temple-maroon text-white lg:hidden">
+        <div className="flex items-center justify-between px-4 py-4">
+          <div>
+            <h1 className="text-lg font-serif font-bold">Admin Portal</h1>
+            <p className="text-xs text-gray-300">Temple Management</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((open) => !open)}
+            className="rounded-lg border border-white/20 p-2"
+            aria-expanded={mobileMenuOpen}
+            aria-label="Toggle admin navigation"
+          >
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
+
+        {mobileMenuOpen && (
+          <div className="border-t border-temple-maroon-dark px-4 py-4">
+            <nav>
+              <ul className="space-y-2">{renderNavLinks(() => setMobileMenuOpen(false))}</ul>
+            </nav>
+
+            <div className="mt-4 border-t border-temple-maroon-dark pt-4">
+              <button
+                onClick={() => signOut({ callbackUrl: '/admin/login' })}
+                className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-gray-200 transition-colors hover:bg-temple-maroon-dark hover:text-white"
+              >
+                <LogOut size={20} />
+                <span>Logout</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
-      <nav className="p-4">
-        <ul className="space-y-2">
-          {menuItems.map((item) => {
-            const Icon = item.icon
-            const isActive = pathname === item.href
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col bg-temple-maroon text-white lg:flex">
+        <div className="border-b border-temple-maroon-dark p-6">
+          <h1 className="text-xl font-serif font-bold">Admin Portal</h1>
+          <p className="mt-1 text-sm text-gray-300">Temple Management</p>
+        </div>
 
-            return (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={cn(
-                    'flex items-center gap-3 px-4 py-3 rounded-lg transition-colors',
-                    isActive
-                      ? 'bg-temple-gold text-temple-maroon font-medium'
-                      : 'text-gray-200 hover:bg-temple-maroon-dark hover:text-white'
-                  )}
-                >
-                  <Icon size={20} />
-                  <span>{item.label}</span>
-                </Link>
-              </li>
-            )
-          })}
-        </ul>
-      </nav>
+        <nav className="flex-1 overflow-y-auto p-4">
+          <ul className="space-y-2">{renderNavLinks()}</ul>
+        </nav>
 
-      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-temple-maroon-dark">
-        <button
-          onClick={() => signOut({ callbackUrl: '/admin/login' })}
-          className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-200 hover:bg-temple-maroon-dark hover:text-white w-full transition-colors"
-        >
-          <LogOut size={20} />
-          <span>Logout</span>
-        </button>
-      </div>
-    </aside>
+        <div className="border-t border-temple-maroon-dark p-4">
+          <button
+            onClick={() => signOut({ callbackUrl: '/admin/login' })}
+            className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-gray-200 transition-colors hover:bg-temple-maroon-dark hover:text-white"
+          >
+            <LogOut size={20} />
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+    </>
   )
 }
-

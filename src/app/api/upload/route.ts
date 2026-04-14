@@ -29,6 +29,23 @@ function getFileExtension(filename: string): string {
   return lastDot === -1 ? '' : filename.substring(lastDot).toLowerCase()
 }
 
+function sanitizeFolderPath(folder: string): string {
+  const segments = folder
+    .split('/')
+    .map((segment) => segment.replace(/[^a-zA-Z0-9_-]/g, ''))
+    .filter(Boolean)
+
+  if (segments.length === 0) {
+    return 'public/uploads'
+  }
+
+  if (segments[0] !== 'public') {
+    segments.unshift('public')
+  }
+
+  return segments.join('/')
+}
+
 /**
  * Validate file
  */
@@ -87,7 +104,7 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
     const file = formData.get('file') as File
-    const folder = (formData.get('folder') as string) || 'public'
+    const folder = (formData.get('folder') as string) || 'public/uploads'
 
     // Validate file exists
     if (!file) {
@@ -105,7 +122,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Sanitize folder name (prevent directory traversal)
-    const sanitizedFolder = folder.replace(/[^a-zA-Z0-9_-]/g, '')
+    const sanitizedFolder = sanitizeFolderPath(folder)
 
     // Convert file to buffer
     const buffer = Buffer.from(await file.arrayBuffer())

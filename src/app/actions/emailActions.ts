@@ -1,23 +1,24 @@
 'use server'
 
-import { resend } from '@/lib/resend';
+import { getResendClient } from '@/lib/resend'
 
-const RECIPIENT = process.env.OFFICIAL_RECIPIENT_EMAIL || 'shreedurgaadishakthi@gmail.com';
+const RECIPIENT = process.env.OFFICIAL_RECIPIENT_EMAIL || 'shreedurgaadishakthi@gmail.com'
 
 export async function sendContactEmail(formData: {
-  name: string;
-  email: string;
-  phone: string;
-  subject: string;
-  message: string;
-  type: string;
+  name: string
+  email: string
+  phone: string
+  subject: string
+  message: string
+  type: string
 }) {
   try {
+    const resend = getResendClient()
     const { data, error } = await resend.emails.send({
       from: 'Temple Website <onboarding@resend.dev>',
       to: [RECIPIENT],
       subject: `New Contact Enquiry: ${formData.subject}`,
-      reply_to: formData.email,
+      replyTo: formData.email,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
           <h2 style="color: #8B0000; border-bottom: 2px solid #8B0000; padding-bottom: 10px;">New Contact Form Submission</h2>
@@ -33,17 +34,17 @@ export async function sendContactEmail(formData: {
           <p style="font-size: 12px; color: #666; margin-top: 30px; text-align: center;">Sent from Shree Durga Adishakti Temple Website</p>
         </div>
       `,
-    });
+    })
 
     if (error) {
-      console.error('Resend error:', error);
-      return { success: false, error: error.message };
+      console.error('Resend error:', error)
+      return { success: false, error: error.message }
     }
 
-    return { success: true, data };
+    return { success: true, data }
   } catch (err: any) {
-    console.error('Email action error:', err);
-    return { success: false, error: err.message };
+    console.error('Email action error:', err)
+    return { success: false, error: err.message }
   }
 }
 
@@ -52,15 +53,16 @@ export async function sendAdmissionsEmail(formData: {
   parentName: string;
   email: string;
   phone: string;
-  class: string;
-  message?: string;
+  class: string
+  message?: string
 }) {
   try {
+    const resend = getResendClient()
     const { data, error } = await resend.emails.send({
       from: 'School Admissions <onboarding@resend.dev>',
       to: [RECIPIENT],
       subject: `New Admission Enquiry: ${formData.studentName} (${formData.class})`,
-      reply_to: formData.email,
+      replyTo: formData.email,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
           <h2 style="color: #8B0000; border-bottom: 2px solid #8B0000; padding-bottom: 10px;">New School Admission Enquiry</h2>
@@ -78,17 +80,17 @@ export async function sendAdmissionsEmail(formData: {
           <p style="font-size: 12px; color: #666; margin-top: 30px; text-align: center;">Sent from Prajna International School Website</p>
         </div>
       `,
-    });
+    })
 
     if (error) {
-      console.error('Resend error:', error);
-      return { success: false, error: error.message };
+      console.error('Resend error:', error)
+      return { success: false, error: error.message }
     }
 
-    return { success: true, data };
+    return { success: true, data }
   } catch (err: any) {
-    console.error('Email action error:', err);
-    return { success: false, error: err.message };
+    console.error('Email action error:', err)
+    return { success: false, error: err.message }
   }
 }
 
@@ -99,14 +101,15 @@ export async function sendDonationNotification(formData: {
   address?: string;
   amount: number;
   purpose: string;
-  frequency: string;
+  frequency: string
 }) {
   try {
+    const resend = getResendClient()
     const { data, error } = await resend.emails.send({
       from: 'Temple Donations <onboarding@resend.dev>',
       to: [RECIPIENT],
       subject: `New Donation Intent: ₹${formData.amount}`,
-      reply_to: formData.email,
+      replyTo: formData.email,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
           <h2 style="color: #8B0000; border-bottom: 2px solid #8B0000; padding-bottom: 10px;">New Donation Notification</h2>
@@ -120,16 +123,16 @@ export async function sendDonationNotification(formData: {
           <p style="font-size: 12px; color: #666; margin-top: 30px; text-align: center;">Sent from Shree Durga Adishakti Temple Website</p>
         </div>
       `,
-    });
+    })
 
     if (error) {
-      console.error('Resend error:', error);
-      return { success: false, error: error.message };
+      console.error('Resend error:', error)
+      return { success: false, error: error.message }
     }
 
-    return { success: true, data };
+    return { success: true, data }
   } catch (err: any) {
-    console.error('Email action error:', err);
-    return { success: false, error: err.message };
+    console.error('Email action error:', err)
+    return { success: false, error: err.message }
   }
 }
