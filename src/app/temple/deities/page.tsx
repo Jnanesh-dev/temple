@@ -45,14 +45,24 @@ export default function DeitiesPage() {
               <CardContent>
                 <CardDescription className="mb-4">{deity.description}</CardDescription>
                 <div className="space-y-2">
-                  <div>
-                    <h4 className="font-semibold text-temple-maroon mb-1">Festivals:</h4>
-                    <p className="text-sm text-gray-600">{deity.festivals.join(', ')}</p>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-temple-maroon mb-1">Special Days:</h4>
-                    <p className="text-sm text-gray-600">{deity.specialDays.join(', ')}</p>
-                  </div>
+                  {deity.festivals.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold text-temple-maroon mb-1">Festivals:</h4>
+                      <p className="text-sm text-gray-600">{deity.festivals.join(', ')}</p>
+                    </div>
+                  )}
+                  {deity.specialDays.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold text-temple-maroon mb-1">Special Days:</h4>
+                      <p className="text-sm text-gray-600">{deity.specialDays.join(', ')}</p>
+                    </div>
+                  )}
+                  {deity.specialSevas && deity.specialSevas.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold text-temple-maroon mb-1">Special Sevas:</h4>
+                      <p className="text-sm text-gray-600">{deity.specialSevas.join(', ')}</p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

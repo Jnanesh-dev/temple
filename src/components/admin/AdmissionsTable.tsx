@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import Button from '@/components/ui/Button'
 
 interface Admission {
@@ -86,17 +87,24 @@ export default function AdmissionsTable({ admissions }: { admissions: Admission[
                 {new Date(admission.createdAt).toLocaleDateString()}
               </td>
               <td className="py-3 px-4">
-                <select
-                  value={admission.status}
-                  onChange={(e) => updateStatus(admission.id, e.target.value)}
-                  disabled={updating === admission.id}
-                  className="text-sm border rounded px-2 py-1"
-                >
-                  <option value="new">New</option>
-                  <option value="contacted">Contacted</option>
-                  <option value="admitted">Admitted</option>
-                  <option value="rejected">Rejected</option>
-                </select>
+                <div className="flex items-center gap-2">
+                  <select
+                    value={admission.status}
+                    onChange={(e) => updateStatus(admission.id, e.target.value)}
+                    disabled={updating === admission.id}
+                    className="text-sm border rounded px-2 py-1"
+                  >
+                    <option value="new">New</option>
+                    <option value="contacted">Contacted</option>
+                    <option value="admitted">Admitted</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                  <Link href={`/admin/admissions/${admission.id}`}>
+                    <Button variant="outline" size="sm">
+                      View
+                    </Button>
+                  </Link>
+                </div>
               </td>
             </tr>
           ))}

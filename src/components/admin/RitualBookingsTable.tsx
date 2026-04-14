@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import Button from '@/components/ui/Button'
 
 interface Booking {
@@ -90,17 +91,24 @@ export default function RitualBookingsTable({ bookings }: { bookings: Booking[] 
                 </span>
               </td>
               <td className="py-3 px-4">
-                <select
-                  value={booking.status}
-                  onChange={(e) => updateStatus(booking.id, e.target.value)}
-                  disabled={updating === booking.id}
-                  className="text-sm border rounded px-2 py-1"
-                >
-                  <option value="pending">Pending</option>
-                  <option value="confirmed">Confirmed</option>
-                  <option value="completed">Completed</option>
-                  <option value="cancelled">Cancelled</option>
-                </select>
+                <div className="flex items-center gap-2">
+                  <select
+                    value={booking.status}
+                    onChange={(e) => updateStatus(booking.id, e.target.value)}
+                    disabled={updating === booking.id}
+                    className="text-sm border rounded px-2 py-1"
+                  >
+                    <option value="pending">Pending</option>
+                    <option value="confirmed">Confirmed</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                  </select>
+                  <Link href={`/admin/ritual-bookings/${booking.id}`}>
+                    <Button variant="outline" size="sm">
+                      View
+                    </Button>
+                  </Link>
+                </div>
               </td>
             </tr>
           ))}

@@ -157,6 +157,45 @@ export default function SchoolAboutPage() {
         </div>
       </Section>
 
+      {/* Campus Highlights */}
+      <Section background="off-white">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="heading-2 mb-8 text-center">Campus Highlights</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                src: '/images/website/about school/WhatsApp Image 2025-04-01 at 22.26.09_a22a0e26.jpg',
+                alt: 'Holistic Learning Spaces',
+              },
+              {
+                src: '/images/website/about school/WhatsApp Image 2025-04-01 at 22.26.20_8dde7817.jpg',
+                alt: 'Modern School Campus',
+              },
+              {
+                src: '/images/website/about school/WhatsApp Image 2025-04-01 at 22.26.50_b7575c90.jpg',
+                alt: 'Student Growth & Activities',
+              },
+            ].map((img, idx) => (
+              <div
+                key={idx}
+                className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-lg group cursor-pointer transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100"
+              >
+                <Image
+                  src={img.src}
+                  alt={img.alt}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
+                  <p className="text-white font-serif text-lg tracking-wide">{img.alt}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Section>
+
       {/* CTA */}
       <Section background="maroon">
         <div className="text-center">

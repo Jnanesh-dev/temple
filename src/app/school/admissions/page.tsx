@@ -10,6 +10,7 @@ import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Textarea from '@/components/ui/Textarea'
 import Select from '@/components/ui/Select'
+import { sendAdmissionsEmail } from '@/app/actions/emailActions'
 
 const enquirySchema = z.object({
   studentName: z.string().min(2, 'Student name must be at least 2 characters'),
@@ -41,10 +42,13 @@ export default function AdmissionsPage() {
   })
 
   const onSubmit = async (data: EnquiryFormData) => {
-    // TODO: Integrate with backend/email service
-    console.log('Admission enquiry:', data)
-    setSubmitted(true)
-    setTimeout(() => setSubmitted(false), 5000)
+    const result = await sendAdmissionsEmail(data)
+    if (result.success) {
+      setSubmitted(true)
+      setTimeout(() => setSubmitted(false), 5000)
+    } else {
+      alert('Failed to submit enquiry. Please try again later.')
+    }
   }
 
   return (

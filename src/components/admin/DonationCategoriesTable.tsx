@@ -2,13 +2,15 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Edit, Trash2 } from 'lucide-react'
+import { Edit, Trash2, Image as ImageIcon } from 'lucide-react'
 import Button from '@/components/ui/Button'
+import Image from 'next/image'
 
 interface Category {
   id: string
   name: string
   description: string
+  imageUrl?: string | null
   isActive: boolean
   order: number
 }
@@ -50,6 +52,7 @@ export default function DonationCategoriesTable({
       <table className="w-full">
         <thead>
           <tr className="border-b">
+            <th className="text-left py-3 px-4 font-semibold text-gray-700 w-20">Image</th>
             <th className="text-left py-3 px-4 font-semibold text-gray-700">Name</th>
             <th className="text-left py-3 px-4 font-semibold text-gray-700">Description</th>
             <th className="text-left py-3 px-4 font-semibold text-gray-700">Status</th>
@@ -59,6 +62,15 @@ export default function DonationCategoriesTable({
         <tbody>
           {categories.map((category) => (
             <tr key={category.id} className="border-b hover:bg-gray-50">
+              <td className="py-3 px-4">
+                <div className="relative w-12 h-12 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center border border-gray-100">
+                  {category.imageUrl ? (
+                    <Image src={category.imageUrl} alt={category.name} fill className="object-cover" />
+                  ) : (
+                    <ImageIcon className="text-gray-300 w-6 h-6" />
+                  )}
+                </div>
+              </td>
               <td className="py-3 px-4 font-medium">{category.name}</td>
               <td className="py-3 px-4">
                 <p className="text-sm text-gray-600 max-w-md">{category.description}</p>

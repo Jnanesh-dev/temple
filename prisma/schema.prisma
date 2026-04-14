@@ -63,6 +63,9 @@ model Donation {
   paymentStatus String   @default("pending") @map("payment_status") // 'pending', 'completed', 'failed'
   paymentId     String?  @map("payment_id")
   transactionId String?  @map("transaction_id")
+  razorpayOrderId   String?  @map("razorpay_order_id")
+  razorpaySignature String?  @map("razorpay_signature")
+  categoryName  String?  @map("category_name")
   receiptUrl    String?  @map("receipt_url")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
@@ -70,6 +73,17 @@ model Donation {
   @@index([paymentStatus])
   @@index([createdAt])
   @@map("donations")
+}
+
+model SystemSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String   @db.Text
+  group     String   // e.g. 'razorpay', 'email', 'general'
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("system_settings")
 }
 
 model ContactEnquiry {
@@ -114,6 +128,11 @@ model RitualBooking {
   preferredDate  DateTime? @map("preferred_date") @db.Date
   preferredTime  String?  @map("preferred_time")
   specialRequests String? @map("special_requests") @db.Text
+  amount            Decimal? @db.Decimal(10, 2)
+  paymentStatus     String   @default("pending") @map("payment_status") // 'pending', 'completed', 'failed'
+  razorpayOrderId   String?  @map("razorpay_order_id")
+  razorpayPaymentId String?  @map("razorpay_payment_id")
+  razorpaySignature String?  @map("razorpay_signature")
   status         String   @default("pending") // 'pending', 'confirmed', 'completed', 'cancelled'
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
@@ -169,10 +188,12 @@ model DonationCategory {
   id          String   @id @default(uuid())
   name        String
   description String   @db.Text
+  imageUrl    String?  @map("image_url")
+  tiers       Json?    @default("[]") // [{ label: string, amount: number }]
   order       Int      @default(0) // For sorting
   isActive    Boolean  @default(true) @map("is_active")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
   @@map("donation_categories")
 }

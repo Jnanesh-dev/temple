@@ -41,3 +41,25 @@ export async function DELETE(
     return NextResponse.json({ error: message }, { status: statusCode })
   }
 }
+
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    await requireAdmin()
+    const { id } = await params
+    const body = await request.json()
+    const { altText } = body
+
+    const image = await prisma.galleryImage.update({
+      where: { id },
+      data: { altText },
+    })
+
+    return NextResponse.json({ success: true, image })
+  } catch (error) {
+    const { message, statusCode } = handleApiError(error)
+    return NextResponse.json({ error: message }, { status: statusCode })
+  }
+}

@@ -28,11 +28,11 @@ export default function HomePage() {
     <>
       {/* Hero Section */}
       <section className="relative h-[600px] md:h-[700px] flex items-center justify-center">
-        <div className="absolute inset-0 bg-gradient-to-r from-temple-maroon-dark/90 to-temple-maroon/80 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-temple-maroon-dark/20 to-temple-maroon/20 z-10" />
         <div
           className="absolute inset-0 bg-cover bg-center z-0"
           style={{
-            backgroundImage: "url('/images/temple-hero.jpg')",
+            backgroundImage: "url('/images/website/home/hero.JPG')",
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
@@ -76,8 +76,8 @@ export default function HomePage() {
           </div>
           <div className="relative h-64 md:h-80 rounded-lg overflow-hidden shadow-lg">
             <Image
-              src="/images/temple/temple-interior.jpg"
-              alt="Temple interior with oil lamps and devotees"
+              src="/images/website/home/gallery 5.JPG"
+              alt="Shree Durga Adishakti Temple"
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 50vw"
@@ -91,8 +91,8 @@ export default function HomePage() {
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div className="relative h-64 md:h-80 rounded-lg overflow-hidden shadow-lg order-2 md:order-1">
             <Image
-              src="/images/school/school-building.jpg"
-              alt="Prajna International School building"
+              src="/images/website/about school/WhatsApp Image 2025-04-01 at 22.26.20_8dde7817.jpg"
+              alt="Prajna International School"
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 50vw"

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import Button from '@/components/ui/Button'
 
 interface Enquiry {
@@ -87,15 +88,20 @@ export default function EnquiriesTable({ enquiries }: { enquiries: Enquiry[] }) 
                 </p>
               )}
               {selected !== enquiry.id && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSelected(enquiry.id)}
-                >
-                  Read More
-                </Button>
-              )}
-            </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelected(enquiry.id)}
+                  >
+                    Read More
+                  </Button>
+                )}
+                <Link href={`/admin/enquiries/${enquiry.id}`} className="ml-2">
+                  <Button variant="outline" size="sm">
+                    View Details
+                  </Button>
+                </Link>
+              </div>
             <div className="ml-4 flex flex-col gap-2">
               {enquiry.status === 'new' && (
                 <Button

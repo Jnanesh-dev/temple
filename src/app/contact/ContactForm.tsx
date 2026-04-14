@@ -12,6 +12,7 @@ import Input from '@/components/ui/Input'
 import Textarea from '@/components/ui/Textarea'
 import Select from '@/components/ui/Select'
 import { MapPin, Phone, Mail, Clock } from 'lucide-react'
+import { sendContactEmail } from '@/app/actions/emailActions'
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -56,10 +57,13 @@ export default function ContactForm() {
   }, [searchParams, setValue])
 
   const onSubmit = async (data: ContactFormData) => {
-    // TODO: Integrate with backend/email service
-    console.log('Contact form:', data)
-    setSubmitted(true)
-    setTimeout(() => setSubmitted(false), 5000)
+    const result = await sendContactEmail(data)
+    if (result.success) {
+      setSubmitted(true)
+      setTimeout(() => setSubmitted(false), 5000)
+    } else {
+      alert('Failed to send message. Please try again later.')
+    }
   }
 
   return (
@@ -188,7 +192,7 @@ export default function ContactForm() {
               <h2 className="heading-3 mb-4">Location</h2>
               <div className="w-full h-64 rounded-lg overflow-hidden">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3887.5!2d74.7!3d13.3!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDE4JzAwLjAiTiA3NMKwNDInMDAuMCJF!5e0!3m2!1sen!2sin!4v1234567890123!5m2!1sen!2sin"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3881.8633623417413!2d74.7682674!3d13.358771100000002!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bbcbde14a783f15%3A0xb47a9dbac033e573!2sPrajna%20International%20School!5e0!3m2!1sen!2sin!4v1776165695792!5m2!1sen!2sin"
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}

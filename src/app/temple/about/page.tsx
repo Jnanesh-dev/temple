@@ -68,6 +68,49 @@ export default function TempleAboutPage() {
         </div>
       </Section>
 
+      {/* Sacred Glimpses */}
+      <Section background="white">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="heading-2 mb-8 text-center">Sacred Glimpses</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                src: '/images/website/about temple/Nidhi Kumbha gayathri.JPG',
+                alt: 'Nidhi Kumbha',
+              },
+              {
+                src: '/images/website/about temple/CSU_6225.JPG',
+                alt: 'Sacred Rituals',
+              },
+              {
+                src: '/images/website/about temple/CSU_5941.JPG',
+                alt: 'Divine Presence',
+              },
+              {
+                src: '/images/website/about temple/CSU_0808.JPG',
+                alt: 'Temple Sanctum',
+              },
+            ].map((img, idx) => (
+              <div
+                key={idx}
+                className="relative aspect-[3/4] sm:aspect-square rounded-2xl overflow-hidden shadow-lg group cursor-pointer transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100"
+              >
+                <Image
+                  src={img.src}
+                  alt={img.alt}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
+                  <p className="text-white font-serif text-lg tracking-wide">{img.alt}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Section>
+
       {/* Daily Rituals */}
       <Section background="off-white">
         <div className="max-w-4xl mx-auto">

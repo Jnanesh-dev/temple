@@ -9,6 +9,11 @@ import { z } from 'zod'
 const donationCategorySchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
   description: z.string().min(1, 'Description is required').max(2000),
+  imageUrl: z.string().optional(),
+  tiers: z.array(z.object({
+    label: z.string(),
+    amount: z.number(),
+  })).optional().default([]),
   order: z.number().int().min(0).default(0),
   isActive: z.boolean().default(true),
 })
@@ -74,7 +79,9 @@ export async function PUT(
     // Sanitize inputs
     const sanitizedData = {
       name: sanitizeString(data.name),
-      description: sanitizeHtml(data.description), // HTML content
+      description: sanitizeHtml(data.description),
+      imageUrl: data.imageUrl,
+      tiers: data.tiers,
       order: data.order,
       isActive: data.isActive,
     }

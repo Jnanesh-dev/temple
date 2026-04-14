@@ -14,6 +14,7 @@ export interface Deity {
   description: string
   festivals: string[]
   specialDays: string[]
+  specialSevas?: string[]
   image?: string
 }
 

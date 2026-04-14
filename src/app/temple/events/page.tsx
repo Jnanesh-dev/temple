@@ -1,6 +1,7 @@
 import Section from '@/components/ui/Section'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { events } from '@/lib/content'
+import Image from 'next/image'
 
 export const metadata = {
   title: 'Events & Festivals | Shree Durga Adishakti Temple',
@@ -30,10 +31,14 @@ export default function EventsPage() {
             {upcomingEvents.map((event) => (
               <Card key={event.id} className="hover:shadow-lg transition-shadow">
                 {event.banner && (
-                  <div className="relative w-full h-48 bg-temple-off-white rounded-t-lg overflow-hidden">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-gray-400">Event Banner</span>
-                    </div>
+                  <div className="relative w-full h-56 rounded-t-lg overflow-hidden group">
+                    <Image
+                      src={event.banner}
+                      alt={event.title}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                   </div>
                 )}
                 <CardHeader>
