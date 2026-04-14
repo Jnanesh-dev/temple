@@ -100,7 +100,7 @@ export default function UploadGalleryPage() {
               <label htmlFor="file" className="block text-sm font-medium text-gray-700 mb-1">
                 Image File *
               </label>
-              <Input id="file" type="file" accept="image/*" {...register('file')} />
+              <Input id="file" type="file" accept=".jpg,.jpeg,.png,.gif,.webp" {...register('file')} />
               {errors.file && (
                 <p className="text-red-600 text-sm mt-1">{errors.file.message as string}</p>
               )}
@@ -155,4 +155,3 @@ export default function UploadGalleryPage() {
     </div>
   )
 }
-

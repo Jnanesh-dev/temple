@@ -168,6 +168,7 @@ export default function DonationsClient({ initialCategories }: { initialCategori
                         src={cat.imageUrl} 
                         alt={cat.name} 
                         fill 
+                        unoptimized
                         className="object-cover transition-transform duration-500 group-hover:scale-110" 
                       />
                     ) : (

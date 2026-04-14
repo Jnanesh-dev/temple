@@ -3,6 +3,12 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 
+const nextAuthSecret = process.env.NEXTAUTH_SECRET
+
+if (!nextAuthSecret) {
+  throw new Error('NEXTAUTH_SECRET is required')
+}
+
 // Track failed login attempts per email (simple in-memory approach)
 // For production, use Redis or database
 const failedLoginAttempts = new Map<string, { count: number; resetTime: number }>()
@@ -105,5 +111,5 @@ export const authOptions: NextAuthOptions = {
       return session
     },
   },
-  secret: process.env.NEXTAUTH_SECRET || 'your-secret-key-change-in-production',
+  secret: nextAuthSecret,
 }

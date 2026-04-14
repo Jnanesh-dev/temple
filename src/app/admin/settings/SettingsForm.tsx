@@ -76,6 +76,7 @@ export default function SettingsForm() {
               />
               <p className="text-xs text-gray-500 mt-1">
                 For security, the secret is not displayed after saving. Leave blank to keep existing.
+                The server must have `SETTINGS_ENCRYPTION_KEY` configured before new secrets can be saved.
               </p>
             </div>
             <div>
@@ -90,6 +91,7 @@ export default function SettingsForm() {
               />
               <p className="text-xs text-gray-500 mt-1">
                 Set this to the secret you configured in your Razorpay Webhook dashboard.
+                It is stored encrypted at rest when `SETTINGS_ENCRYPTION_KEY` is present.
               </p>
             </div>
 

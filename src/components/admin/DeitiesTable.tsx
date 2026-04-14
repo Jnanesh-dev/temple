@@ -67,6 +67,7 @@ export default function DeitiesTable({ deities }: { deities: Deity[] }) {
                       src={deity.imageUrl}
                       alt={deity.name}
                       fill
+                      unoptimized
                       className="object-cover"
                     />
                   </div>
@@ -118,4 +119,3 @@ export default function DeitiesTable({ deities }: { deities: Deity[] }) {
     </div>
   )
 }
-

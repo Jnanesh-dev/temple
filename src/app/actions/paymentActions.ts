@@ -2,6 +2,8 @@
 
 import { prisma } from '@/lib/prisma';
 import { getRazorpayClient, getRazorpaySettings } from '@/lib/payment';
+import { requireAdmin } from '@/lib/admin';
+import { encryptSettingValue } from '@/lib/secureSettings';
 import crypto from 'crypto';
 import { sendDonationNotification } from './emailActions';
 
@@ -154,28 +156,49 @@ export async function finalizeDonationFromWebhook(donationId: string, paymentId:
  */
 export async function savePaymentSettings(data: { keyId: string; keySecret: string; webhookSecret?: string }) {
   try {
+    await requireAdmin();
+
+    const keyId = data.keyId.trim();
+    const keySecret = data.keySecret.trim();
+    const webhookSecret = data.webhookSecret?.trim() || '';
+
+    if (!keyId) {
+      throw new Error('Razorpay Key ID is required.');
+    }
+
+    const encryptedKeySecret = keySecret ? encryptSettingValue(keySecret) : null
+    const encryptedWebhookSecret = webhookSecret ? encryptSettingValue(webhookSecret) : null
+
     // Upsert key ID
     await prisma.systemSetting.upsert({
       where: { key: 'razorpay_key_id' },
-      update: { value: data.keyId },
-      create: { key: 'razorpay_key_id', value: data.keyId, group: 'razorpay' },
+      update: { value: keyId },
+      create: { key: 'razorpay_key_id', value: keyId, group: 'razorpay' },
     });
 
     // Upsert key Secret (only if provided)
-    if (data.keySecret) {
+    if (encryptedKeySecret) {
       await prisma.systemSetting.upsert({
         where: { key: 'razorpay_key_secret' },
-        update: { value: data.keySecret },
-        create: { key: 'razorpay_key_secret', value: data.keySecret, group: 'razorpay' },
+        update: { value: encryptedKeySecret },
+        create: {
+          key: 'razorpay_key_secret',
+          value: encryptedKeySecret,
+          group: 'razorpay',
+        },
       });
     }
 
     // Upsert Webhook Secret (only if provided)
-    if (data.webhookSecret) {
+    if (encryptedWebhookSecret) {
       await prisma.systemSetting.upsert({
         where: { key: 'razorpay_webhook_secret' },
-        update: { value: data.webhookSecret },
-        create: { key: 'razorpay_webhook_secret', value: data.webhookSecret, group: 'razorpay' },
+        update: { value: encryptedWebhookSecret },
+        create: {
+          key: 'razorpay_webhook_secret',
+          value: encryptedWebhookSecret,
+          group: 'razorpay',
+        },
       });
     }
 

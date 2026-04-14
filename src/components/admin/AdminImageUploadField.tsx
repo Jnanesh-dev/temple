@@ -150,7 +150,7 @@ export default function AdminImageUploadField({
       <input
         id={inputId}
         type="file"
-        accept="image/*"
+        accept=".jpg,.jpeg,.png,.gif,.webp"
         className="sr-only"
         onChange={handleFileChange}
         disabled={disabled || uploading}

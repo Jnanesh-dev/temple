@@ -65,7 +65,13 @@ export default function DonationCategoriesTable({
               <td className="py-3 px-4">
                 <div className="relative w-12 h-12 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center border border-gray-100">
                   {category.imageUrl ? (
-                    <Image src={category.imageUrl} alt={category.name} fill className="object-cover" />
+                    <Image
+                      src={category.imageUrl}
+                      alt={category.name}
+                      fill
+                      unoptimized
+                      className="object-cover"
+                    />
                   ) : (
                     <ImageIcon className="text-gray-300 w-6 h-6" />
                   )}
@@ -110,4 +116,3 @@ export default function DonationCategoriesTable({
     </div>
   )
 }
-

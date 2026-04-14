@@ -68,6 +68,7 @@ export default function LeadershipTable({ leadership }: { leadership: Leader[] }
                       src={leader.imageUrl}
                       alt={leader.name}
                       fill
+                      unoptimized
                       className="object-cover"
                     />
                   </div>
@@ -109,4 +110,3 @@ export default function LeadershipTable({ leadership }: { leadership: Leader[] }
     </div>
   )
 }
-

@@ -2,18 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
 import { finalizeDonationFromWebhook } from '@/app/actions/paymentActions';
+import { getRazorpayWebhookSecret } from '@/lib/payment';
 
 export async function POST(req: NextRequest) {
   try {
     const rawBody = await req.text();
     const signature = req.headers.get('x-razorpay-signature');
-
-    // Fetch webhook secret from DB
-    const secretSetting = await prisma.systemSetting.findUnique({
-      where: { key: 'razorpay_webhook_secret' },
-    });
-
-    const secret = secretSetting?.value || process.env.RAZORPAY_WEBHOOK_SECRET;
+    const secret = await getRazorpayWebhookSecret();
 
     if (!secret) {
       console.error('Razorpay Webhook Secret not configured');
@@ -36,8 +31,6 @@ export async function POST(req: NextRequest) {
 
     if (event.event === 'payment.captured') {
       const payment = event.payload.payment.entity;
-      const donationId = payment.notes.receipt || payment.notes.donationId || payment.description?.split(' ')[1]; 
-      // Fallback: search by order_id
       const orderId = payment.order_id;
 
       if (orderId) {

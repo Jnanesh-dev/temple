@@ -1,5 +1,10 @@
 import Razorpay from 'razorpay';
 import { prisma } from './prisma';
+import {
+  decryptSettingValue,
+  encryptSettingValue,
+  isEncryptedSettingValue,
+} from './secureSettings';
 
 /**
  * Fetches Razorpay credentials from the database.
@@ -13,9 +18,41 @@ export async function getRazorpaySettings() {
   });
 
   const keyId = settings.find((s) => s.key === 'razorpay_key_id')?.value || process.env.RAZORPAY_KEY_ID;
-  const keySecret = settings.find((s) => s.key === 'razorpay_key_secret')?.value || process.env.RAZORPAY_KEY_SECRET;
+  let storedKeySecret = settings.find((s) => s.key === 'razorpay_key_secret')?.value;
+  let storedWebhookSecret = settings.find((s) => s.key === 'razorpay_webhook_secret')?.value;
 
-  return { keyId, keySecret };
+  if (
+    storedKeySecret &&
+    process.env.SETTINGS_ENCRYPTION_KEY &&
+    !isEncryptedSettingValue(storedKeySecret)
+  ) {
+    storedKeySecret = encryptSettingValue(storedKeySecret);
+    await prisma.systemSetting.update({
+      where: { key: 'razorpay_key_secret' },
+      data: { value: storedKeySecret },
+    });
+  }
+
+  if (
+    storedWebhookSecret &&
+    process.env.SETTINGS_ENCRYPTION_KEY &&
+    !isEncryptedSettingValue(storedWebhookSecret)
+  ) {
+    storedWebhookSecret = encryptSettingValue(storedWebhookSecret);
+    await prisma.systemSetting.update({
+      where: { key: 'razorpay_webhook_secret' },
+      data: { value: storedWebhookSecret },
+    });
+  }
+
+  const keySecret = storedKeySecret
+    ? decryptSettingValue(storedKeySecret)
+    : process.env.RAZORPAY_KEY_SECRET;
+  const webhookSecret = storedWebhookSecret
+    ? decryptSettingValue(storedWebhookSecret)
+    : process.env.RAZORPAY_WEBHOOK_SECRET;
+
+  return { keyId, keySecret, webhookSecret };
 }
 
 /**
@@ -32,4 +69,9 @@ export async function getRazorpayClient() {
     key_id: keyId,
     key_secret: keySecret,
   });
+}
+
+export async function getRazorpayWebhookSecret() {
+  const { webhookSecret } = await getRazorpaySettings();
+  return webhookSecret;
 }
