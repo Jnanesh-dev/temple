@@ -1,8 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/admin'
-import { handleApiError, NotFoundError } from '@/lib/errors'
+import { handleApiError, NotFoundError, ValidationError } from '@/lib/errors'
 import { deleteFile } from '@/lib/minio'
+import { sanitizeString } from '@/lib/sanitize'
+
+const galleryImagePatchSchema = z.object({
+  altText: z.string().max(500).optional().or(z.literal('')),
+})
+
+function getObjectNameFromFileUrl(fileUrl: string): string | null {
+  if (fileUrl.startsWith('public/')) {
+    return fileUrl
+  }
+
+  try {
+    const bucketName = process.env.MINIO_BUCKET_NAME || 'temple-assets'
+    const url = new URL(fileUrl)
+    const bucketPrefix = `/${bucketName}/`
+
+    if (!url.pathname.startsWith(bucketPrefix)) {
+      return null
+    }
+
+    return decodeURIComponent(url.pathname.slice(bucketPrefix.length))
+  } catch {
+    return null
+  }
+}
 
 export async function DELETE(
   request: NextRequest,
@@ -24,7 +50,11 @@ export async function DELETE(
 
     // Delete from MinIO (best effort - don't fail if this fails)
     try {
-      await deleteFile(image.fileUrl)
+      const objectName = getObjectNameFromFileUrl(image.fileUrl)
+
+      if (objectName) {
+        await deleteFile(objectName)
+      }
     } catch (error) {
       console.error('Error deleting from MinIO:', error)
       // Continue with database deletion even if MinIO deletion fails
@@ -49,8 +79,19 @@ export async function PATCH(
   try {
     await requireAdmin()
     const { id } = await params
-    const body = await request.json()
-    const { altText } = body
+    const validationResult = galleryImagePatchSchema.safeParse(await request.json())
+
+    if (!validationResult.success) {
+      const error = new ValidationError('Validation failed', {
+        fields: validationResult.error.flatten().fieldErrors,
+      })
+      const { message, statusCode, details } = handleApiError(error)
+      return NextResponse.json({ error: message, details }, { status: statusCode })
+    }
+
+    const altText = validationResult.data.altText
+      ? sanitizeString(validationResult.data.altText)
+      : null
 
     const image = await prisma.galleryImage.update({
       where: { id },

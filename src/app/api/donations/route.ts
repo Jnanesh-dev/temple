@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/admin'
 import { query } from '@/lib/db'
 import { checkRateLimit } from '@/lib/rateLimit'
-import { sanitizeString, sanitizeEmail, sanitizePhone, sanitizeNumber } from '@/lib/sanitize'
+import { sanitizeString, sanitizeEmail, sanitizePhone } from '@/lib/sanitize'
 import { handleApiError, ValidationError, RateLimitError } from '@/lib/errors'
 import { z } from 'zod'
 
@@ -117,6 +118,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    await requireAdmin()
+
     const { searchParams } = new URL(request.url)
     const limitParam = searchParams.get('limit') || '10'
     const offsetParam = searchParams.get('offset') || '0'
@@ -126,7 +129,8 @@ export async function GET(request: NextRequest) {
     const offset = Math.max(parseInt(offsetParam, 10) || 0, 0) // At least 0
 
     const result = await query(
-      `SELECT * FROM donations 
+      `SELECT id, donor_name, donor_email, amount, purpose, frequency, payment_status, created_at
+       FROM donations 
        ORDER BY created_at DESC 
        LIMIT $1 OFFSET $2`,
       [limit, offset]

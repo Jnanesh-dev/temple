@@ -63,22 +63,29 @@ export function sanitizeUrl(url: string): string {
   if (typeof url !== 'string') {
     return ''
   }
-  
+
   const trimmed = url.trim()
-  
+
   // Only allow http and https protocols
   if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
     return ''
   }
-  
+
   // Basic URL validation
   try {
     const urlObj = new URL(trimmed)
+
     // Only allow http and https
     if (urlObj.protocol !== 'http:' && urlObj.protocol !== 'https:') {
       return ''
     }
-    return trimmed.substring(0, 2048) // Max URL length
+
+    if (urlObj.username || urlObj.password) {
+      return ''
+    }
+
+    const normalized = urlObj.toString()
+    return normalized.length <= 2048 ? normalized : ''
   } catch {
     return ''
   }
@@ -137,4 +144,3 @@ export function sanitizeObject(obj: Record<string, any>): Record<string, any> {
   
   return sanitized
 }
-

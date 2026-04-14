@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
+import crypto from 'crypto'
 import { authOptions } from '@/lib/auth'
 import { uploadToMinIO } from '@/lib/minio'
 import { handleApiError, AuthorizationError, ValidationError, RateLimitError } from '@/lib/errors'
@@ -143,7 +144,7 @@ function validateFile(file: File, buffer: Buffer): {
   if (!ALLOWED_EXTENSIONS.includes(extension)) {
     return {
       valid: false,
-        error: `File extension ${extension} is not allowed. Allowed extensions: ${ALLOWED_EXTENSIONS.join(', ')}`,
+      error: `File extension ${extension} is not allowed. Allowed extensions: ${ALLOWED_EXTENSIONS.join(', ')}`,
     }
   }
 
@@ -204,9 +205,8 @@ export async function POST(request: NextRequest) {
 
     // Generate unique filename to prevent overwrites and collisions
     const timestamp = Date.now()
-    const randomSuffix = Math.random().toString(36).substring(2, 8)
     const extension = getFileExtension(file.name)
-    const fileName = `${timestamp}-${randomSuffix}${extension}`
+    const fileName = `${timestamp}-${crypto.randomUUID()}${extension}`
     const filePath = `${sanitizedFolder}/${fileName}`
 
     // Upload to MinIO

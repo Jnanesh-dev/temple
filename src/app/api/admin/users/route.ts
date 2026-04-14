@@ -2,14 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/admin'
 import { handleApiError, ValidationError } from '@/lib/errors'
+import { sanitizeEmail, sanitizeString } from '@/lib/sanitize'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 
 const userSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
   email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  role: z.string().default('admin'),
+  password: z.string().min(8, 'Password must be at least 8 characters').max(128),
+  role: z.enum(['admin']).default('admin'),
 })
 
 export async function POST(request: NextRequest) {
@@ -27,10 +28,16 @@ export async function POST(request: NextRequest) {
     }
 
     const { name, email, password, role } = validationResult.data
+    const sanitizedName = sanitizeString(name)
+    const sanitizedEmail = sanitizeEmail(email)
+
+    if (!sanitizedName || !sanitizedEmail) {
+      return NextResponse.json({ error: 'Invalid user details' }, { status: 400 })
+    }
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { email },
+      where: { email: sanitizedEmail },
     })
 
     if (existingUser) {
@@ -45,8 +52,8 @@ export async function POST(request: NextRequest) {
 
     const user = await prisma.user.create({
       data: {
-        name,
-        email,
+        name: sanitizedName,
+        email: sanitizedEmail,
         passwordHash,
         role,
       },
