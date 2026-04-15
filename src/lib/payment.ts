@@ -6,6 +6,11 @@ import {
   isEncryptedSettingValue,
 } from './secureSettings';
 
+type SettingLike = {
+  key: string
+  value: string
+}
+
 /**
  * Fetches Razorpay credentials from the database.
  * If not found in DB, falls back to environment variables.
@@ -17,9 +22,12 @@ export async function getRazorpaySettings() {
     },
   });
 
-  const keyId = settings.find((s) => s.key === 'razorpay_key_id')?.value || process.env.RAZORPAY_KEY_ID;
-  let storedKeySecret = settings.find((s) => s.key === 'razorpay_key_secret')?.value;
-  let storedWebhookSecret = settings.find((s) => s.key === 'razorpay_webhook_secret')?.value;
+  const findSettingValue = (key: string) =>
+    settings.find((setting: SettingLike) => setting.key === key)?.value;
+
+  const keyId = findSettingValue('razorpay_key_id') || process.env.RAZORPAY_KEY_ID;
+  let storedKeySecret = findSettingValue('razorpay_key_secret');
+  let storedWebhookSecret = findSettingValue('razorpay_webhook_secret');
 
   if (
     storedKeySecret &&
