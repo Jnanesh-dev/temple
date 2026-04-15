@@ -13,6 +13,7 @@ import Script from 'next/script'
 import Image from 'next/image'
 import { createDonationOrder, verifyPayment, getPaymentPublicSettings } from '@/app/actions/paymentActions'
 import { Heart, ChevronRight, Check, ArrowLeft, Info } from 'lucide-react'
+import { resolveMediaUrl } from '@/lib/media'
 
 const donationSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -165,7 +166,7 @@ export default function DonationsClient({ initialCategories }: { initialCategori
                   <div className="relative aspect-[4/3] w-full overflow-hidden">
                     {cat.imageUrl ? (
                       <Image 
-                        src={cat.imageUrl} 
+                        src={resolveMediaUrl(cat.imageUrl) || cat.imageUrl} 
                         alt={cat.name} 
                         fill 
                         unoptimized

@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Edit, Trash2 } from 'lucide-react'
 import Button from '@/components/ui/Button'
+import { resolveMediaUrl } from '@/lib/media'
 
 interface Deity {
   id: string
@@ -61,10 +62,10 @@ export default function DeitiesTable({ deities }: { deities: Deity[] }) {
           {deities.map((deity) => (
             <tr key={deity.id} className="border-b hover:bg-gray-50">
               <td className="py-3 px-4">
-                {deity.imageUrl ? (
+                {resolveMediaUrl(deity.imageUrl) ? (
                   <div className="w-16 h-16 relative rounded overflow-hidden">
                     <Image
-                      src={deity.imageUrl}
+                      src={resolveMediaUrl(deity.imageUrl)!}
                       alt={deity.name}
                       fill
                       unoptimized

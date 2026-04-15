@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Edit, Trash2 } from 'lucide-react'
 import Button from '@/components/ui/Button'
+import { resolveMediaUrl } from '@/lib/media'
 
 interface Leader {
   id: string
@@ -62,10 +63,10 @@ export default function LeadershipTable({ leadership }: { leadership: Leader[] }
           {leadership.map((leader) => (
             <tr key={leader.id} className="border-b hover:bg-gray-50">
               <td className="py-3 px-4">
-                {leader.imageUrl ? (
+                {resolveMediaUrl(leader.imageUrl) ? (
                   <div className="w-16 h-16 relative rounded-full overflow-hidden">
                     <Image
-                      src={leader.imageUrl}
+                      src={resolveMediaUrl(leader.imageUrl)!}
                       alt={leader.name}
                       fill
                       unoptimized

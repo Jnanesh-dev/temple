@@ -1,4 +1,5 @@
 import * as Minio from 'minio'
+import { buildPublicFileUrl } from '@/lib/media'
 
 function getRequiredEnv(name: string): string {
   const value = process.env[name]
@@ -102,10 +103,7 @@ export async function getFileUrl(objectName: string, expiry: number = 7 * 24 * 6
   try {
     // For public files, return direct URL
     if (objectName.startsWith('public/')) {
-      const protocol = process.env.MINIO_USE_SSL === 'true' ? 'https' : 'http'
-      const port = process.env.MINIO_PORT || '9000'
-      const endpoint = process.env.MINIO_ENDPOINT || 'localhost'
-      return `${protocol}://${endpoint}:${port}/${BUCKET_NAME}/${objectName}`
+      return buildPublicFileUrl(objectName)
     }
     
     // For private files, generate presigned URL

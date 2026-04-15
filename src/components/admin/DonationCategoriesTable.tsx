@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Edit, Trash2, Image as ImageIcon } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import Image from 'next/image'
+import { resolveMediaUrl } from '@/lib/media'
 
 interface Category {
   id: string
@@ -64,9 +65,9 @@ export default function DonationCategoriesTable({
             <tr key={category.id} className="border-b hover:bg-gray-50">
               <td className="py-3 px-4">
                 <div className="relative w-12 h-12 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center border border-gray-100">
-                  {category.imageUrl ? (
+                  {resolveMediaUrl(category.imageUrl) ? (
                     <Image
-                      src={category.imageUrl}
+                      src={resolveMediaUrl(category.imageUrl)!}
                       alt={category.name}
                       fill
                       unoptimized

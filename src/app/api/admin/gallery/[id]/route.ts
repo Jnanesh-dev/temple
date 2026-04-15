@@ -4,31 +4,12 @@ import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/admin'
 import { handleApiError, NotFoundError, ValidationError } from '@/lib/errors'
 import { deleteFile } from '@/lib/minio'
+import { getObjectNameFromFileUrl } from '@/lib/media'
 import { sanitizeString } from '@/lib/sanitize'
 
 const galleryImagePatchSchema = z.object({
   altText: z.string().max(500).optional().or(z.literal('')),
 })
-
-function getObjectNameFromFileUrl(fileUrl: string): string | null {
-  if (fileUrl.startsWith('public/')) {
-    return fileUrl
-  }
-
-  try {
-    const bucketName = process.env.MINIO_BUCKET_NAME || 'temple-assets'
-    const url = new URL(fileUrl)
-    const bucketPrefix = `/${bucketName}/`
-
-    if (!url.pathname.startsWith(bucketPrefix)) {
-      return null
-    }
-
-    return decodeURIComponent(url.pathname.slice(bucketPrefix.length))
-  } catch {
-    return null
-  }
-}
 
 export async function DELETE(
   request: NextRequest,

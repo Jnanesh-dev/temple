@@ -3,6 +3,7 @@
 import { ChangeEvent, useEffect, useId, useState } from 'react'
 import Image from 'next/image'
 import { Image as ImageIcon, Loader2, Upload, X } from 'lucide-react'
+import { resolveMediaUrl } from '@/lib/media'
 import { cn } from '@/lib/utils'
 
 interface AdminImageUploadFieldProps {
@@ -29,6 +30,7 @@ export default function AdminImageUploadField({
   const inputId = useId()
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
+  const previewUrl = resolveMediaUrl(value)
 
   useEffect(() => {
     onUploadingChange?.(uploading)
@@ -86,10 +88,10 @@ export default function AdminImageUploadField({
           previewClassName || 'aspect-video'
         )}
       >
-        {value ? (
+        {previewUrl ? (
           <>
             <Image
-              src={value}
+              src={previewUrl}
               alt={label}
               fill
               unoptimized

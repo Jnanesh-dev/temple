@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { Trash2, Edit2, Check, X } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
+import { resolveMediaUrl } from '@/lib/media'
 
 interface GalleryImage {
   id: string
@@ -79,7 +80,7 @@ export default function GalleryTable({ images }: { images: GalleryImage[] }) {
         <div key={image.id} className="border rounded-xl border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group">
           <div className="relative h-56 bg-gray-50 overflow-hidden">
             <Image
-              src={image.fileUrl}
+              src={resolveMediaUrl(image.fileUrl) || image.fileUrl}
               alt={image.altText || image.fileName}
               fill
               unoptimized
@@ -161,4 +162,3 @@ export default function GalleryTable({ images }: { images: GalleryImage[] }) {
     </div>
   )
 }
-
